@@ -112,16 +112,19 @@ in
   environment.systemPackages = with pkgs; [
 
     # Hyprland dependencies
-    swww # for wallpapers
+    swww # for wallpapers may not actually be a dependency/needed
     xdg-desktop-portal-gtk
     xdg-desktop-portal-hyprland
-    xwayland
+    xwayland # compatibility layer for X.Org within Wayland
     brightnessctl
     meson
     wayland-protocols
     wayland-utils
     wl-clipboard
     wlroots
+    wofi # dmenu replacement for wayland environments
+    dunst # notification daemon
+    kitty # terminal emulator
 
     # Hyprland / Hypr-ecosystem
     hyprland 
@@ -132,16 +135,10 @@ in
     hyprlock   # screen locker
     hyprcursor # edit cursor
 
-    # Customization
-    nwg-look
-
-    # Internet
-    firefox
+    firefox # Mozilla's Firefox web browser
     vesktop # Unofficial Discord Client
-
-
-    # editor
-    neovim
+    neovim  # Vim-fork focused on extensbility and usability
+    tmux    # a terminal multiplexer
     
     # common utils
     wget 
@@ -161,15 +158,6 @@ in
     nodejs
     python314
 
-    # dmenu
-    wofi
-
-    # notification daemon 
-    dunst
-
-    # terminal emulator
-    kitty
-
     # screenshots
     grim
     slurp
@@ -183,11 +171,8 @@ in
     pavucontrol # maybe works better than pwvucontrol
     pwvucontrol # modern volume controller like pavucontrol 
     wireplumber # pipewire session manager
-    easyeffects # pipewire audio effects
+    easyeffects # pipewire audio effects, channel mixer
     alsa-utils  # troubleshooting, adds alsamixer
-
-    # workflows
-    tmux
 
     # kdePackages
     kdePackages.qtsvg
@@ -207,53 +192,59 @@ in
     # filelight
     # kate or kwrite 
     
-    # GNOME pkgs
-    gnome-calculator  # Calculator for GNOME
-    #kdePackages.kalk # Calculator for KDE
+    # Calculators
+      # Default
+      gnome-calculator  # Calculator for GNOME
+      #kdePackages.kalk # Calculator for KDE
 
+    # GNOME pkgs
     gnome-decoder # QR codes
     gtg
     gnome-frog
 
     # Webcams
-    cheese
-    # KDE
-    webcamoid
-    kdePackages.kamera
-
-    # Pdf
+      #GNOME
+      cheese
+      #KDE
+      webcamoid
+      kdePackages.kamera
 
     # Clocks
-    # GNOME
-    gnome-clocks
-    gnome-solanum
-    gnome-pomodoro
-    # KDE
-    kdePackages.kclock # Clock
-    kronometer
-    ktimetracker
-    kdePackages.ktimer
+      #GNOME
+      gnome-clocks
+      gnome-solanum
+      gnome-pomodoro
+      #KDE
+      kdePackages.kclock # Clock
+      kronometer
+      ktimetracker
+      kdePackages.ktimer
 
     # Development
-    # GNOME
-    gitg # GNOME GUI client to view git repositories
-    # nix currently missing kommit sadge. 
+      #GNOME
+      gitg # GNOME GUI client to view git repositories
+      # nix currently missing kommit sadge. 
 
 
     # Pdfs and OCR
-    # gnome
-    ocrfeeder          # an OCR GUI for GNOME (uses tesceract)
-    evince             # a pdf reader for GNOME
-    # kde
-    kdePackages.okular # a pdf reader for KDE
+      #GNOME
+      ocrfeeder          # an OCR GUI for GNOME (uses tesceract)
+      evince             # a pdf reader for GNOME
+      #KDE
+      kdePackages.okular # a pdf reader for KDE
 
     # Gaming
     vulkan-tools
     prismlauncher
 
+    # AI
+    ollama-cuda # Run large language models locally, using CUDA for NVIDIA GPU acceleration
+    kdePackages.alpaka # Kirigami client for Ollama
+
     # NOT WORKING
     #kdePackages.plasma-systemmonitor # provides usage statistics such as CPU%
     #kdePackages.kamoso
+    #nwg-look # a GTK3 settings editor adapted to work in the wlroots environment
   ];
   # END Packages
 
@@ -273,37 +264,15 @@ in
     wqy_zenhei
   ];
 
-  environment.variables = {
-    EDITOR = "nvim";
-    SUDO_EDITOR = "nvim";
-    VISUAL = "nvim";
+  # Environment Variables
+  environment = {
+    variables.EDITOR = "nvim";
+    variables.SUDO_EDITOR = "nvim";
+    variables.VISUAL = "nvim";
+    variables.WLR_NO_HARDWARE_CURSORS = "1";
+    sessionVariables.NIXOS_OZONE_WL = "1"; # Hint Electron apps to use wayland
   };
 
-  # Hint Electron apps to use wayland
-  environment.sessionVariables = {
-    NIXOS_OZONE_WL = "1";
-  };
-
-  # i7 8th gen nvidia 1080 config
-  # Enable OpenGL
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true; # For steam/proton
-  };
-
-  programs.gamemode.enable = true;
-
-  # List services that you want to enable:
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # (Optional) for graphical session
-  services.xserver.enable = true;
   services.xserver.displayManager.sddm.enable = true; # sddm is a greeter, manages signin
   programs.hyprland.enable = true;
 
@@ -316,7 +285,6 @@ in
       pkgs.xdg-desktop-portal-gtk
     ];
   };
-  
 
   # Enable sound with pipewire
   security.rtkit.enable = true;
@@ -339,12 +307,45 @@ in
   ];
 
   # Steam
+  programs.gamemode.enable = true;
   programs.steam = {
     enable = true;
-    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+    remotePlay.openFirewall = true; # Required for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Required for Source Dedicated Server
+    localNetworkGameTransfers.openFirewall = true; # Required for Steam Local Network Transfers
   };
+
+  # NVIDIA + 32-bit GL for Steam/Proton
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+
+  services.xserver.enable = true; # XOrg compatibility
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware.nvidia = {
+    modesetting.enable = true;
+    open = false;                         # use the proprietary driver for CUDA
+    nvidiaSettings = false;
+    powerManagement.enable = true;        # optional on laptops
+  };
+  # Not for me, for wizards.
+  #hardware.nvidia.prime = {
+    #offload.enable = true;
+    ## Set your bus IDs (use `lspci` to confirm):
+    #intelBusId  = "PCI:0:2:0";
+    #nvidiaBusId = "PCI:1:0:0";
+  #};
+
+  # List services that you want to enable:
+  # Enable the OpenSSH daemon.
+  # services.openssh.enable = true;
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
 
   # Experimental features
   # --extra-experimental-features nix-command
