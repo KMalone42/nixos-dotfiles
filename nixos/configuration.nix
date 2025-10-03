@@ -111,109 +111,142 @@ in
   # $ nix search wget
   environment.systemPackages = with pkgs; [
 
-  # Hyprland dependencies
-  swww # for wallpapers
-  xdg-desktop-portal-gtk
-  xdg-desktop-portal-hyprland
-  xwayland
-  brightnessctl
-  meson
-  wayland-protocols
-  wayland-utils
-  wl-clipboard
-  wlroots
+    # Hyprland dependencies
+    swww # for wallpapers
+    xdg-desktop-portal-gtk
+    xdg-desktop-portal-hyprland
+    xwayland
+    brightnessctl
+    meson
+    wayland-protocols
+    wayland-utils
+    wl-clipboard
+    wlroots
 
-  # Hyprland / Hypr-ecosystem
-  hyprland 
-  hyprpaper  # wallpaper
-  hyprshade  # night mode
-  hyprpicker # color select
-  hypridle   # idle behavior -> hyprlock
-  hyprlock   # screen locker
-  hyprcursor # edit cursor
+    # Hyprland / Hypr-ecosystem
+    hyprland 
+    hyprpaper  # wallpaper
+    hyprshade  # night mode
+    hyprpicker # color select
+    hypridle   # idle behavior -> hyprlock
+    hyprlock   # screen locker
+    hyprcursor # edit cursor
 
-  # Customization
-  nwg-look
+    # Customization
+    nwg-look
 
-  # Internet
-  firefox
-  vesktop # Unofficial Discord Client
-
-
-  # editor
-  neovim
-  
-  # common utils
-  wget 
-  gcc
-  git
-  mpv
-  busybox
-  scdoc
-  cmake
-  efibootmgr
-  tlrc
-  man
-  cyme # Modern cross-platform lsusb
-  gnumake42 # Tool to control the generation of non-source files from sources
-
-  # Muh interpretted languages
-  nodejs
-  python314
-
-  # dmenu
-  wofi
-
-  # notification daemon 
-  dunst
-
-  # terminal emulator
-  kitty
-
-  # screenshots
-  grim
-  slurp
-
-  # password manager
-  bitwarden-desktop
-
-  ### Sound
-  sof-firmware
-  ## Control
-  pavucontrol # maybe works better than pwvucontrol
-  pwvucontrol # modern volume controller like pavucontrol 
-  wireplumber # pipewire session manager
-  easyeffects # pipewire audio effects
-  alsa-utils  # troubleshooting, adds alsamixer
-
-  # workflows
-  tmux
-
-  # kdePackages
-  kdePackages.qtsvg
-  kdePackages.dolphin # file manager GUI using qt
-  kdePackages.kio-fuse # to mount remote filesystems via FUSE
-  kdePackages.kio-extras # extra protocols support (sftp, fish and more)
-  #kdePackages.kalk # calculator replaced with gnome-calculator
-  kdePackages.plasma-systemmonitor # provides usage statistics such as CPU%
-  kdePackages.kclock # clock
-  kdePackages.gwenview # video and image viewer
-  # things for me to figure out later
-  # kdePackages.parititonmanager
-  # powerdevil
-  # fontviewer
-  # filelight
-  # kate or kwrite 
-  gnome-calculator
-  gnome-decoder # QR codes
+    # Internet
+    firefox
+    vesktop # Unofficial Discord Client
 
 
-  # Gaming
-  vulkan-tools
-  prismlauncher
+    # editor
+    neovim
+    
+    # common utils
+    wget 
+    gcc
+    git
+    mpv
+    busybox
+    scdoc
+    cmake
+    efibootmgr
+    tlrc
+    man
+    cyme # Modern cross-platform lsusb
+    gnumake42 # Tool to control the generation of non-source files from sources
 
-  
-  
+    # Muh interpretted languages
+    nodejs
+    python314
+
+    # dmenu
+    wofi
+
+    # notification daemon 
+    dunst
+
+    # terminal emulator
+    kitty
+
+    # screenshots
+    grim
+    slurp
+
+    # password manager
+    bitwarden-desktop
+
+    ### Sound
+    sof-firmware
+    ## Control
+    pavucontrol # maybe works better than pwvucontrol
+    pwvucontrol # modern volume controller like pavucontrol 
+    wireplumber # pipewire session manager
+    easyeffects # pipewire audio effects
+    alsa-utils  # troubleshooting, adds alsamixer
+
+    # workflows
+    tmux
+
+    # kdePackages
+    kdePackages.qtsvg
+    gtk4 # Multi-platform toolkit for creating graphical user interfaces
+    kdePackages.kdeconnect-kde
+    
+    
+    kdePackages.dolphin # file manager GUI using qt
+    kdePackages.kio-fuse # to mount remote filesystems via FUSE
+    kdePackages.kio-extras # extra protocols support (sftp, fish and more)
+    kdePackages.gwenview # video and image viewer
+    # things for me to figure out later
+    # kdePackages.parititonmanager
+    # powerdevil
+    # fontviewer
+    # filelight
+    # kate or kwrite 
+    
+    # GNOME pkgs
+    gnome-calculator  # Calculator for GNOME
+    #kdePackages.kalk # Calculator for KDE
+
+    gnome-decoder # QR codes
+    ocrfeeder
+    gtg
+    gnome-frog
+
+    # Webcams
+    cheese
+    # KDE
+    webcamoid
+    kdePackages.kamera
+
+    # Pdf
+    # gnome
+    evince
+    # kde
+    kdePackages.okular
+
+    # Clocks
+    # GNOME
+    gnome-clocks
+    gnome-solanum
+    gnome-pomodoro
+    # KDE
+    kdePackages.kclock # Clock
+
+    # Development
+    # GNOME
+    gitg # GNOME GUI client to view git repositories
+    # nix currently missing kommit sadge. 
+
+    # Gaming
+    vulkan-tools
+    prismlauncher
+
+    # NOT WORKING
+    #kdePackages.plasma-systemmonitor # provides usage statistics such as CPU%
+    #kdePackages.kamoso
   ];
   # END Packages
 
