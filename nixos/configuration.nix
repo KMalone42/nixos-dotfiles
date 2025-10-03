@@ -193,9 +193,10 @@ in
     kdePackages.qtsvg
     gtk4 # Multi-platform toolkit for creating graphical user interfaces
     kdePackages.kdeconnect-kde
-    
+    kdePackages.isoimagewriter
     
     kdePackages.dolphin # file manager GUI using qt
+    kdePackages.kio-gdrive # KIO Worker to access Google Drive
     kdePackages.kio-fuse # to mount remote filesystems via FUSE
     kdePackages.kio-extras # extra protocols support (sftp, fish and more)
     kdePackages.gwenview # video and image viewer
@@ -211,7 +212,6 @@ in
     #kdePackages.kalk # Calculator for KDE
 
     gnome-decoder # QR codes
-    ocrfeeder
     gtg
     gnome-frog
 
@@ -222,10 +222,6 @@ in
     kdePackages.kamera
 
     # Pdf
-    # gnome
-    evince
-    # kde
-    kdePackages.okular
 
     # Clocks
     # GNOME
@@ -234,11 +230,22 @@ in
     gnome-pomodoro
     # KDE
     kdePackages.kclock # Clock
+    kronometer
+    ktimetracker
+    kdePackages.ktimer
 
     # Development
     # GNOME
     gitg # GNOME GUI client to view git repositories
     # nix currently missing kommit sadge. 
+
+
+    # Pdfs and OCR
+    # gnome
+    ocrfeeder          # an OCR GUI for GNOME (uses tesceract)
+    evince             # a pdf reader for GNOME
+    # kde
+    kdePackages.okular # a pdf reader for KDE
 
     # Gaming
     vulkan-tools
