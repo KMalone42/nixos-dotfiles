@@ -1,4 +1,4 @@
-# and in the NixOS manual (accessible by running ‘nixos-help’).
+# NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, lib, ... }:
 
@@ -135,10 +135,11 @@ in
     hyprlock   # screen locker
     hyprcursor # edit cursor
 
-    firefox # Mozilla's Firefox web browser
-    vesktop # Unofficial Discord Client
-    neovim  # Vim-fork focused on extensbility and usability
-    tmux    # a terminal multiplexer
+    firefox  # Mozilla's Firefox web browser
+    chromium # Open source web browser from Google
+    vesktop  # Unofficial Discord Client
+    neovim   # Vim-fork focused on extensbility and usability
+    tmux     # a terminal multiplexer
     
     # common utils
     wget 
@@ -179,8 +180,8 @@ in
     gtk4 # Multi-platform toolkit for creating graphical user interfaces
     kdePackages.kdeconnect-kde
     kdePackages.isoimagewriter
-    
     kdePackages.dolphin # file manager GUI using qt
+    qbittorrent # Torrent file manager
     kdePackages.kio-gdrive # KIO Worker to access Google Drive
     kdePackages.kio-fuse # to mount remote filesystems via FUSE
     kdePackages.kio-extras # extra protocols support (sftp, fish and more)
@@ -273,7 +274,52 @@ in
     sessionVariables.NIXOS_OZONE_WL = "1"; # Hint Electron apps to use wayland
   };
 
-  services.xserver.displayManager.sddm.enable = true; # sddm is a greeter, manages signin
+  # NVIDIA + 32-bit GL for Steam/Proton
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+
+  services.xserver.enable = true; # XOrg compatibility
+  services.libinput.enable = true; # Required with lightdm for whatever reason
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  hardware.nvidia = {
+    modesetting.enable = true;
+    open = false;                         # use the proprietary driver for CUDA
+    nvidiaSettings = false;
+    powerManagement.enable = true;        # optional on laptops
+  };
+
+  # Display Server -> Display Manager/Greeter -> DesktopEnv/WindowManager
+
+  services.displayManager.sddm.enable = true;
+        #  services.xserver.displayManager.lightdm = {
+        #    enable = true;
+        #    background = ./wallpapers/Upstate-Newyork/adirondack-statepark.jpg;
+        #
+        #    greeters.gtk = {
+        #      enable = true;
+        #      theme.package = pkgs.adw-gtk3;
+        #      theme.name = "adw-gtk3-dark";
+        #
+        #      iconTheme.package = pkgs.papirus-icon-theme;
+        #      iconTheme.name = "Papirus-Dark";
+        #
+        #      cursorTheme.package = pkgs.bibata-cursors;
+        #      cursorTheme.name = "Bibata-Modern-Ice";
+        #      cursorTheme.size = 24;
+        #
+        #      indicators = [ "~session" "~spacer" "~clock" "~spacer" "power" ];  
+        #
+        #      clock-format = "%a %b %d %H:%M";
+        #      extraConfig = ''
+        #        # font-name = Inter 11
+        #        # xft-dpi = 110
+        #        # user-background = false
+        #      '';
+        #    };
+    #  };
   programs.hyprland.enable = true;
 
   # Enable screen sharing
@@ -302,10 +348,9 @@ in
       #  };
       #};
   };
-  services.pipewire.wireplumber.configPackages = [
+  services.pipewire.wireplumber.configPackages = [];
 
-  ];
-
+  # -- Miscelanious Services --
   # Steam
   programs.gamemode.enable = true;
   programs.steam = {
@@ -314,29 +359,6 @@ in
     dedicatedServer.openFirewall = true; # Required for Source Dedicated Server
     localNetworkGameTransfers.openFirewall = true; # Required for Steam Local Network Transfers
   };
-
-  # NVIDIA + 32-bit GL for Steam/Proton
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
-
-  services.xserver.enable = true; # XOrg compatibility
-  services.xserver.videoDrivers = [ "nvidia" ];
-
-  hardware.nvidia = {
-    modesetting.enable = true;
-    open = false;                         # use the proprietary driver for CUDA
-    nvidiaSettings = false;
-    powerManagement.enable = true;        # optional on laptops
-  };
-  # Not for me, for wizards.
-  #hardware.nvidia.prime = {
-    #offload.enable = true;
-    ## Set your bus IDs (use `lspci` to confirm):
-    #intelBusId  = "PCI:0:2:0";
-    #nvidiaBusId = "PCI:1:0:0";
-  #};
 
   # List services that you want to enable:
   # Enable the OpenSSH daemon.
