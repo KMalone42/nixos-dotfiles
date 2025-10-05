@@ -76,6 +76,8 @@ in
           ".config/hypr/hyprpaper.conf".source  = ./hypr/hyprpaper.conf;
           ".config/hypr/hypridle.conf".source   = ./hypr/hypridle.conf;
           ".config/hypr/hyprlock.conf".source   = ./hypr/hyprlock.conf;
+          # Wofi
+          ".config/wofi/style.css".source = ./wofi/style.css;
         };
         programs.tmux = {
             enable = true;
@@ -125,6 +127,8 @@ in
     wofi # dmenu replacement for wayland environments
     dunst # notification daemon
     kitty # terminal emulator
+    cage # Dependency for Wayland based greetd setups
+    greetd.regreet # a greeter
 
     # Hyprland / Hypr-ecosystem
     hyprland 
@@ -192,6 +196,12 @@ in
     # fontviewer
     # filelight
     # kate or kwrite 
+    # Themes
+    kdePackages.breeze
+    kdePackages.breeze-gtk
+    kdePackages.breeze-icons
+    bibata-cursors
+
     
     # Calculators
       # Default
@@ -280,7 +290,7 @@ in
     enable32Bit = true;
   };
 
-  services.xserver.enable = true; # XOrg compatibility
+  services.xserver.enable = true; # XOrg compatibility # maybe not required
   services.libinput.enable = true; # Required with lightdm for whatever reason
   services.xserver.videoDrivers = [ "nvidia" ];
 
@@ -293,33 +303,11 @@ in
 
   # Display Server -> Display Manager/Greeter -> DesktopEnv/WindowManager
 
-  services.displayManager.sddm.enable = true;
-        #  services.xserver.displayManager.lightdm = {
-        #    enable = true;
-        #    background = ./wallpapers/Upstate-Newyork/adirondack-statepark.jpg;
-        #
-        #    greeters.gtk = {
-        #      enable = true;
-        #      theme.package = pkgs.adw-gtk3;
-        #      theme.name = "adw-gtk3-dark";
-        #
-        #      iconTheme.package = pkgs.papirus-icon-theme;
-        #      iconTheme.name = "Papirus-Dark";
-        #
-        #      cursorTheme.package = pkgs.bibata-cursors;
-        #      cursorTheme.name = "Bibata-Modern-Ice";
-        #      cursorTheme.size = 24;
-        #
-        #      indicators = [ "~session" "~spacer" "~clock" "~spacer" "power" ];  
-        #
-        #      clock-format = "%a %b %d %H:%M";
-        #      extraConfig = ''
-        #        # font-name = Inter 11
-        #        # xft-dpi = 110
-        #        # user-background = false
-        #      '';
-        #    };
-    #  };
+  services.displayManager.sddm = {
+      enable = true;
+      theme = "breeze";
+  };
+
   programs.hyprland.enable = true;
 
   # Enable screen sharing
