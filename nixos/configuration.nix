@@ -52,58 +52,86 @@ in
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
+  # KdeConnect Groups = uinput, input
   users.users.kmalone = {
     isNormalUser = true;
     description = "kmalone";
-    extraGroups = [ "networkmanager" "wheel"];
+    extraGroups = [ "networkmanager" "wheel" "uinput" "input"];
     packages = with pkgs; [];
   };
 
   # BEGIN Home-Manager
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
+  home-manager.backupFileExtension = "backup";
 
   home-manager.users.kmalone = { pkgs, ...}: {
     home.packages = [ pkgs.atool pkgs.httpie ];
     home.stateVersion = "25.05";
-        programs.waybar.enable = true;
-        home.file = {
-          # Waybar
-          ".config/waybar/config.jsonc".source = ./waybar/config.jsonc;
-          ".config/waybar/style.css".source     = ./waybar/style.css;
-          # Hypr
-          ".config/hypr/hyprland.conf".source   = ./hypr/hyprland.conf;
-          ".config/hypr/hyprpaper.conf".source  = ./hypr/hyprpaper.conf;
-          ".config/hypr/hypridle.conf".source   = ./hypr/hypridle.conf;
-          ".config/hypr/hyprlock.conf".source   = ./hypr/hyprlock.conf;
-          # Wofi
-          ".config/wofi/style.css".source = ./wofi/style.css;
-        };
-        programs.tmux = {
-            enable = true;
-            terminal = "tmux-256color";
-            extraConfig = builtins.readFile ./tmux.conf;
-        };
-        services.mpd = {
-            enable = true;
-            musicDirectory = "/home/kmalone/Digital_Media/Music/";
-            extraConfig = ''
-                # must specify one or more outputs in order to play audio!
-                # (e.g. ALSA, PulseAudio, PipeWire), see next sections
-                audio_output {
-                    type "pipewire" 
-                    name "My PipeWire Output"
-                }
-            '';
-            # Optional:
-            #network.listenAddress = "any"; # if you want to allow non-localhost
-            #network.startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
-        };
-        programs.rmpc = {
-            enable = true;
-        };
+
+    home.file = {
+      # Waybar
+      ".config/waybar/config.jsonc".source = ./waybar/config.jsonc;
+      ".config/waybar/style.css".source     = ./waybar/style.css;
+      # Hypr
+      ".config/hypr/hyprland.conf".source   = ./hypr/hyprland.conf;
+      ".config/hypr/hyprpaper.conf".source  = ./hypr/hyprpaper.conf;
+      ".config/hypr/hypridle.conf".source   = ./hypr/hypridle.conf;
+      ".config/hypr/hyprlock.conf".source   = ./hypr/hyprlock.conf;
+      # Wofi
+      ".config/wofi/style.css".source = ./wofi/style.css;
+    };
+    programs.waybar.enable = true;
+    programs.tmux = {
+        enable = true;
+        terminal = "tmux-256color";
+        extraConfig = builtins.readFile ./tmux.conf;
+    };
+    services.mpd = {
+        enable = true;
+        musicDirectory = "/home/kmalone/Digital_Media/Music/";
+        extraConfig = ''
+            # must specify one or more outputs in order to play audio!
+            # (e.g. ALSA, PulseAudio, PipeWire), see next sections
+            audio_output {
+                type "pipewire" 
+                name "My PipeWire Output"
+            }
+        '';
+        # Optional:
+        #network.listenAddress = "any"; # if you want to allow non-localhost
+        #network.startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
+    };
+    programs.rmpc = {
+        enable = true;
+    };
+    gtk = {
+      enable = true;
+      theme = {
+        name = "Gruvbox-Dark";
+        package = pkgs.gruvbox-dark-gtk;
+      };
+      iconTheme = {
+        name = "Mint-L";
+        package = pkgs.mint-l-icons;
+      };
+    };
   };
   # END Home-Manager
+
+        #  gtk = {
+        #    enable = true;
+        #    theme = {
+        #      name = "Adwaita-dark";
+        #      package = pkgs.gnome.gnome-themes-extra;
+        #    };
+    #  };
+
+        #  qt = {
+        #    enable = true;
+        #    platform = "qtct";
+        #    style = "kvantum";
+    #  };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -127,8 +155,8 @@ in
     wofi # dmenu replacement for wayland environments
     dunst # notification daemon
     kitty # terminal emulator
-    cage # Dependency for Wayland based greetd setups
-    greetd.regreet # a greeter
+    #cage # Dependency for Wayland based greetd setups
+    #greetd.regreet # a greeter
 
     # Hyprland / Hypr-ecosystem
     hyprland 
@@ -139,11 +167,28 @@ in
     hyprlock   # screen locker
     hyprcursor # edit cursor
 
-    firefox  # Mozilla's Firefox web browser
+    # Productivity
+    bitwarden-desktop # Password Manager
     chromium # Open source web browser from Google
-    vesktop  # Unofficial Discord Client
-    neovim   # Vim-fork focused on extensbility and usability
-    tmux     # a terminal multiplexer
+    firefox  # Mozilla's Firefox web browser
+    gimp3    # GNU Image Manipulation Program
+    inkscape # Vector graphics editor
+    neovim      # Vim-fork focused on extensbility and usability
+    rclone      # Command line program to sync files and directories to and from major cloud storage
+    thunderbird # Mozilla's "Full-featured e-mail client"
+    tmux        # a terminal multiplexer
+    vesktop     # Unofficial Discord Client
+    libreoffice-qt6-fresh # Comprehensive, professional-quality productivity suite, a variant of openoffice.org
+    newsflash
+
+    # Homelabbing
+    kdePackages.kdeconnect-kde
+    syncthing syncthingtray
+
+    # Rice
+    cava
+    gotop
+    fastfetch
     
     # common utils
     wget 
@@ -158,17 +203,15 @@ in
     man
     cyme # Modern cross-platform lsusb
     gnumake42 # Tool to control the generation of non-source files from sources
+    parted # Create, destroy, resize, check, and copy partitions
 
     # Muh interpretted languages
     nodejs
-    python314
+    python314 python313Packages.pip # python language + package manager
+    docker_28
 
     # screenshots
-    grim
-    slurp
-
-    # password manager
-    bitwarden-desktop
+    grim slurp
 
     ### Sound
     sof-firmware
@@ -182,14 +225,13 @@ in
     # kdePackages
     kdePackages.qtsvg
     gtk4 # Multi-platform toolkit for creating graphical user interfaces
-    kdePackages.kdeconnect-kde
     kdePackages.isoimagewriter
-    kdePackages.dolphin # file manager GUI using qt
     qbittorrent # Torrent file manager
     kdePackages.kio-gdrive # KIO Worker to access Google Drive
     kdePackages.kio-fuse # to mount remote filesystems via FUSE
     kdePackages.kio-extras # extra protocols support (sftp, fish and more)
     kdePackages.gwenview # video and image viewer
+    kdePackages.kdenlive # Free and open source video editor, based on MLT Framework and KDE Frameworks
     # things for me to figure out later
     # kdePackages.parititonmanager
     # powerdevil
@@ -201,6 +243,16 @@ in
     kdePackages.breeze-gtk
     kdePackages.breeze-icons
     bibata-cursors
+    themechanger # Theme changing utility for Linux
+    libsForQt5.qtstyleplugin-kvantum kdePackages.qtstyleplugin-kvantum # SVG-based Qt5 theme engine plus a config tool and extra themes
+    mint-themes mint-l-icons mint-x-icons mint-y-icons # mint icon and themes
+    nemo
+    gruvbox-dark-gtk
+    gruvbox-gtk-theme
+    gruvbox-material-gtk-theme
+    gruvbox-dark-icons-gtk
+    gruvbox-kvantum
+
 
     
     # Calculators
@@ -230,6 +282,11 @@ in
       kronometer
       ktimetracker
       kdePackages.ktimer
+    # To compare
+    # gnome-clocks vs kclock
+    # gnome-solanum vs gnome-pomodoro
+    # kronometer vs idk
+    # 
 
     # Development
       #GNOME
@@ -243,14 +300,21 @@ in
       evince             # a pdf reader for GNOME
       #KDE
       kdePackages.okular # a pdf reader for KDE
+      karp # pdf arranger for KDE
 
     # Gaming
     vulkan-tools
     prismlauncher
 
+    # Recording
+    obs-studio
+
     # AI
     ollama-cuda # Run large language models locally, using CUDA for NVIDIA GPU acceleration
     kdePackages.alpaka # Kirigami client for Ollama
+    # File Manager
+    nautilus
+    kdePackages.dolphin # file manager GUI using qt
 
     # NOT WORKING
     #kdePackages.plasma-systemmonitor # provides usage statistics such as CPU%
@@ -282,6 +346,8 @@ in
     variables.VISUAL = "nvim";
     variables.WLR_NO_HARDWARE_CURSORS = "1";
     sessionVariables.NIXOS_OZONE_WL = "1"; # Hint Electron apps to use wayland
+    sessionVariables.KVANTUM_THEME = "Gruvbox";
+    sessionVariables.GTK_THEME= "Mint-Y-Dark";
   };
 
   # NVIDIA + 32-bit GL for Steam/Proton
@@ -309,13 +375,13 @@ in
   };
 
   programs.hyprland.enable = true;
-
-  # Enable screen sharing
-  services.dbus.enable = true;
+  services.dbus.enable = true; # Enable screen sharing
   xdg.portal = {
     enable = true;
-    wlr.enable = true;
+    xdgOpenUsePortal = true;
+    wlr.enable = true; # need this for kdeconnect maybe
     extraPortals = [
+      pkgs.xdg-desktop-portal-hyprland
       pkgs.xdg-desktop-portal-gtk
     ];
   };
@@ -339,6 +405,37 @@ in
   services.pipewire.wireplumber.configPackages = [];
 
   # -- Miscelanious Services --
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+  virtualisation.docker.enable = true;
+
+  services.upower.enable = true;
+  services.udisks2.enable = true;
+
+  # KDE Connect daemon/service
+  programs.kdeconnect = {
+    enable = true;
+    package = pkgs.kdePackages.kdeconnect-kde;
+  };
+  hardware.uinput.enable = true; # required for phone -> mouse input may not be required
+  boot.kernelModules = [ "uinput" ];
+  networking.firewall = {
+    allowedTCPPorts = [ 1714 1764 ];
+    allowedUDPPorts = [ 1714 1764 ];
+  };
+  # Needed for input plugin (uinput access)
+  services.udev.extraRules = ''
+    KERNEL=="uinput", MODE="0660", GROUP="input", OPTIONS+="static_node=uinput"
+  '';
+
+  # Syncthing Daemon
+  services.syncthing = {
+    enable = true;
+    package = pkgs.syncthing;
+    # syncthingtray
+  };
+
+
   # Steam
   programs.gamemode.enable = true;
   programs.steam = {
