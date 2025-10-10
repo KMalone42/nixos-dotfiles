@@ -1,9 +1,10 @@
-style = ~/.config/wofi/menu.css
+style=/home/kmalone/.config/wofi/style.css
 
-width=600
-height=500
-location=center
 show=drun
+width=400
+height=1920
+xoffset=70
+yoffset=0
 prompt=Apps
 filter_rate=100
 allow_markup=true
@@ -14,4 +15,3 @@ content_halign=fill
 insensitive=true
 allow_images=true
 image_size=40
-gtk_dark=true

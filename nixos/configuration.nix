@@ -79,6 +79,7 @@ in
       ".config/hypr/hypridle.conf".source   = ./hypr/hypridle.conf;
       ".config/hypr/hyprlock.conf".source   = ./hypr/hyprlock.conf;
       # Wofi
+      ".config/wofi/config".source = ./wofi/config;
       ".config/wofi/style.css".source = ./wofi/style.css;
     };
     programs.waybar.enable = true;
@@ -207,7 +208,10 @@ in
 
     # Muh interpretted languages
     nodejs
-    python314 python313Packages.pip # python language + package manager
+    (python313.withPackages (ps: with ps; [
+      pip mutagen numpy scipy pandas matplotlib jupyterlab ipython 
+      scikit-learn pillow requests sqlalchemy aiosqlite opencv4
+    ]))
     docker_28
 
     # screenshots
@@ -222,16 +226,18 @@ in
     easyeffects # pipewire audio effects, channel mixer
     alsa-utils  # troubleshooting, adds alsamixer
 
+    gtk4 # Multi-platform toolkit for creating graphical user interfaces
+    qbittorrent # Torrent file manager
+
     # kdePackages
     kdePackages.qtsvg
-    gtk4 # Multi-platform toolkit for creating graphical user interfaces
+
     kdePackages.isoimagewriter
-    qbittorrent # Torrent file manager
     kdePackages.kio-gdrive # KIO Worker to access Google Drive
-    kdePackages.kio-fuse # to mount remote filesystems via FUSE
+    kdePackages.kio-fuse   # to mount remote filesystems via FUSE
     kdePackages.kio-extras # extra protocols support (sftp, fish and more)
-    kdePackages.gwenview # video and image viewer
-    kdePackages.kdenlive # Free and open source video editor, based on MLT Framework and KDE Frameworks
+    kdePackages.gwenview   # video and image viewer
+    kdePackages.kdenlive   # Free and open source video editor, based on MLT Framework and KDE Frameworks
     # things for me to figure out later
     # kdePackages.parititonmanager
     # powerdevil
@@ -432,7 +438,10 @@ in
   services.syncthing = {
     enable = true;
     package = pkgs.syncthing;
-    # syncthingtray
+    user = "kmalone";
+    dataDir = "/home/kmalone";
+    configDir = "/home/kmalone/.config/syncthing";
+    openDefaultPorts = true;
   };
 
 
