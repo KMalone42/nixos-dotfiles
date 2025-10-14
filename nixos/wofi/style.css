@@ -1,0 +1,34 @@
+window {
+  margin: 0;
+  border: none;
+  background-color: rgba(40, 40, 40, 0.95); /* #282828, ~95% opaque */
+}
+
+#outer-box, #inner-box, #scroll, #input, #text {
+  background-color: transparent;
+  color: #ebdbb2; /* light Gruvbox text */
+}
+
+#input {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background-color: rgba(60, 56, 54, 0.9); /* slightly lighter input field */
+  border: 1px solid rgba(235, 219, 178, 0.15);
+  color: #ebdbb2;
+}
+
+#entry {
+  padding: 8px 12px;
+  margin: 2px 0;
+  background-color: transparent;
+  color: #ebdbb2;
+}
+
+#entry:selected {
+  background-color: rgba(214, 93, 14, 0.25); /* warm Gruvbox orange highlight */
+  border-radius: 8px;
+}
+
+#scroll {
+  padding: 8px;
+}
