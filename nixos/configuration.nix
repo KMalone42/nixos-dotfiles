@@ -53,10 +53,11 @@ in
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   # KdeConnect Groups = uinput, input
+  # input also associated with qemu/kvm 
   users.users.kmalone = {
     isNormalUser = true;
     description = "kmalone";
-    extraGroups = [ "networkmanager" "wheel" "uinput" "input"];
+    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "libvirtd" "kvm"];
     packages = with pkgs; [];
   };
 
@@ -175,6 +176,7 @@ in
     gimp3    # GNU Image Manipulation Program
     inkscape # Vector graphics editor
     neovim      # Vim-fork focused on extensbility and usability
+    tree-sitter # CLI for :TSInstallFromGrammar
     rclone      # Command line program to sync files and directories to and from major cloud storage
     thunderbird # Mozilla's "Full-featured e-mail client"
     tmux        # a terminal multiplexer
@@ -205,6 +207,10 @@ in
     cyme # Modern cross-platform lsusb
     gnumake42 # Tool to control the generation of non-source files from sources
     parted # Create, destroy, resize, check, and copy partitions
+    man-pages
+    man-pages-posix
+    linux-manual
+    unzip
 
     # Muh interpretted languages
     nodejs
@@ -212,7 +218,6 @@ in
       pip mutagen numpy scipy pandas matplotlib jupyterlab ipython 
       scikit-learn pillow requests sqlalchemy aiosqlite opencv4
     ]))
-    docker_28
 
     # screenshots
     grim slurp
@@ -326,6 +331,12 @@ in
     #kdePackages.plasma-systemmonitor # provides usage statistics such as CPU%
     #kdePackages.kamoso
     #nwg-look # a GTK3 settings editor adapted to work in the wlroots environment
+
+    # Virtualization
+    qemu_kvm virtio-win  # Windows virtio drivers ISO
+    spice-gtk           # SPICE client libs
+    quickemu quickgui   # zero-friction VM creation
+    docker_28
   ];
   # END Packages
 
@@ -413,7 +424,6 @@ in
   # -- Miscelanious Services --
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
-  virtualisation.docker.enable = true;
 
   services.upower.enable = true;
   services.udisks2.enable = true;
@@ -444,6 +454,19 @@ in
     openDefaultPorts = true;
   };
 
+  # KVM/QEMU setup
+  virtualisation = {
+    docker.enable = true; # Not needed for the rest of the qemu setup
+    libvirtd.enable = true;
+    libvirtd.qemu = {
+      package = pkgs.qemu_kvm;
+      ovmf.enable = true;
+      swtpm.enable = true;
+      runAsRoot = false;
+    };
+    spiceUSBRedirection.enable = true;
+  };
+  programs.virt-manager.enable = true;
 
   # Steam
   programs.gamemode.enable = true;
@@ -452,6 +475,11 @@ in
     remotePlay.openFirewall = true; # Required for Steam Remote Play
     dedicatedServer.openFirewall = true; # Required for Source Dedicated Server
     localNetworkGameTransfers.openFirewall = true; # Required for Steam Local Network Transfers
+  };
+
+  documentation.man = {
+    enable = true;
+    generateCaches = true;
   };
 
   # List services that you want to enable:
