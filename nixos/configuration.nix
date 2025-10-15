@@ -11,7 +11,7 @@ in
     ./hardware-configuration.nix
     (import "${home-manager}/nixos")
   ]
-  ++ lib.optionals (builtins.pathExists ./modules/nvidia.nix)     [ ./modules/nvidia.nix ]
+  #++ lib.optionals (builtins.pathExists ./modules/nvidia.nix)     [ ./modules/nvidia.nix ]
   #++ lib.optionals (builtins.pathExists ./modules/intel-igpu.nix) [ ./modules/intel-igpu.nix ]
   ;
     
@@ -265,6 +265,7 @@ in
     gruvbox-material-gtk-theme
     gruvbox-dark-icons-gtk
     gruvbox-kvantum
+    kitty-themes
 
 
     
@@ -366,7 +367,7 @@ in
     variables.WLR_NO_HARDWARE_CURSORS = "1";
     sessionVariables.NIXOS_OZONE_WL = "1"; # Hint Electron apps to use wayland
     sessionVariables.KVANTUM_THEME = "Gruvbox";
-    sessionVariables.GTK_THEME= "Mint-Y-Dark";
+    #sessionVariables.GTK_THEME= "Mint-Y-Dark";
   };
 
   hardware.graphics = {
