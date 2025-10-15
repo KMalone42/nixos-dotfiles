@@ -381,14 +381,6 @@ in
 
   services.xserver.enable = true; # XOrg compatibility # maybe not required
   services.libinput.enable = true; # Required with lightdm for whatever reason
-  services.xserver.videoDrivers = [ "nvidia" ];
-
-  hardware.nvidia = {
-    modesetting.enable = true;
-    open = false;                         # use the proprietary driver for CUDA
-    nvidiaSettings = false;
-    powerManagement.enable = true;        # optional on laptops
-  };
 
   # Display Server -> Display Manager/Greeter -> DesktopEnv/WindowManager
 
