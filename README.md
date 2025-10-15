@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dev
 
 This is the Development branch for my personal desktop, it is updated 
@@ -26,3 +27,23 @@ sudo nixos-rebuild switch
 ```
 
 as you can see it is fairly basic but it gets the job done.
+=======
+# Main
+
+this is the main branch of my nix desktop configuration. It is updated when i
+feel a major change has been made.
+
+last update 2025-10-03
+
+## Recent Updates
+setup home-manager to track
+* hypr config files
+* waybar
+* tmux.conf
+
+## Todo
+home-manager
+* setup nvim tracking
+* declare more kde apps
+* get nvidia gtx 1080 working drivers
+>>>>>>> be05c55 (readme added)
