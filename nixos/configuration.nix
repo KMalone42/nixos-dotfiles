@@ -84,6 +84,11 @@ in
       # Wofi
       ".config/wofi/config".source = ./wofi/config;
       ".config/wofi/style.css".source = ./wofi/style.css;
+      # Kitty
+      ".config/kitty/Gruvbox_Dark.conf".source = ./kitty/Gruvbox_Dark.conf;
+      ".config/kitty/kitty.conf".source = ./kitty/kitty.conf;
+      # Bash
+      ".bashrc".source = ./bashrc;
     };
     programs.waybar.enable = true;
     programs.tmux = {

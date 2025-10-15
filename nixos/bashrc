@@ -1,0 +1,69 @@
+# ~/.bashrc
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+PS1="\[\e[1;32m\]\u@\h\[\e[0m\] \[\e[1;34m\]\W\[\e[0m\] \$ "
+
+# case-agnostic tab complete
+bind "set completion-ignore-case on"
+bind "set completion-map-case on"
+bind "set show-all-if-ambiguous on"
+
+# environment variables
+export PATH="$HOME/.local/bin/:$PATH"
+export SUDO_EDITOR="nvim"
+export EDITOR="nvim"
+# Allow unfree packages to be temporarily run with nix-shell -p 'foo'
+# Required for ollama
+export NIXPKGS_ALLOW_UNFREE=1
+export OLLAMA_FLASH_ATTENTION=0   # turn off FA kernels (Pascal-safe)
+export OLLAMA_NUM_GPU=1
+export OLLAMA_CUDA=1
+export CUDA_VISIBLE_DEVICES=0
+export OLLAMA_KV_CACHE_TYPE=f16   # smaller KV cache than fp32
+export OLLAMA_MAX_CONTEXT=2048     # reduce ctx from 4096
+export OLLAMA_BATCH_SIZE=1         # reduce batch size
+export MANPATH="/run/nixos/sw/share/man"
+
+## Aliases
+# Nix
+# There is a backup script in ~/.local/bin/backup-nix
+alias rbnix='sudo nixos-rebuild switch'
+alias rbhome='home-manager switch'
+
+# Shortcuts
+alias tls='tmux ls'
+alias sudoconfig='sudoedit /etc/nixos/configuration.nix'
+
+# Syntax
+alias view='kitty +kitten icat'
+alias nvimdiff='nvim -d'
+alias vinegar='flatpak run org.vinegarhq.Vinegar'
+alias rebuild='sudo nixos-rebuild switch'
+alias lsusb='cyme'
+
+[[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
+
+# Shortcuts
+
+# 'at' short for 'attach tmux'
+# usage 'at 0' -> attaches tmux to instance 0
+function at (){
+    tmux a -t "$1"
+}
+
+# usage 'ovpn Mullvad' -> launches random mullvad ovpn config
+function ovpn () {
+    cd ~/OpenVpn/config/"$1"
+    mapfile -t target_array < <(ls|grep -E '.*\.(conf|ovpn)$')
+    target="${target_array[RANDOM % ${#target_array[@]}]}"
+    sudo openvpn --config "$target"
+}
+
+function reset-display () {
+    sudo systemctl restart displaylink.service
+    sudo systemctl restart display-manager
+}
