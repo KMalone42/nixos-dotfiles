@@ -371,7 +371,7 @@ in
     variables.WLR_NO_HARDWARE_CURSORS = "1";
     sessionVariables.NIXOS_OZONE_WL = "1"; # Hint Electron apps to use wayland
     sessionVariables.KVANTUM_THEME = "Gruvbox";
-    sessionVariables.GTK_THEME= "Mint-Y-Dark";
+    #sessionVariables.GTK_THEME= "Mint-Y-Dark";
   };
 
   hardware.graphics = {
