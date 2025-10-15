@@ -7,12 +7,14 @@ let
 in
 {
   imports =
-    [ 
-      ./hardware-configuration.nix
-      (import "${home-manager}/nixos")
-    ];
-  
-
+  [ 
+    ./hardware-configuration.nix
+    (import "${home-manager}/nixos")
+  ]
+  ++ lib.optionals (builtins.pathExists ./modules/nvidia.nix) [ ./modules/nvidia.nix ]
+  ++ lib.optionals (config.networking.hostName == "nix-intel") [ ./modules/intel-igpu.nix ]
+  ;
+    
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -367,7 +369,6 @@ in
     sessionVariables.GTK_THEME= "Mint-Y-Dark";
   };
 
-  # NVIDIA + 32-bit GL for Steam/Proton
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
