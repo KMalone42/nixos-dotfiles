@@ -11,8 +11,8 @@ in
     ./hardware-configuration.nix
     (import "${home-manager}/nixos")
   ]
-  ++ lib.optionals (builtins.pathExists ./modules/nvidia.nix) [ ./modules/nvidia.nix ]
-  ++ lib.optionals (config.networking.hostName == "nix-intel") [ ./modules/intel-igpu.nix ]
+  ++ lib.optionals (builtins.pathExists ./modules/nvidia.nix)     [ ./modules/nvidia.nix ]
+  #++ lib.optionals (builtins.pathExists ./modules/intel-igpu.nix) [ ./modules/intel-igpu.nix ]
   ;
     
   # Bootloader.
