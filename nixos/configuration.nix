@@ -84,6 +84,11 @@ in
       # Wofi
       ".config/wofi/config".source = ./wofi/config;
       ".config/wofi/style.css".source = ./wofi/style.css;
+      # Kitty
+      ".config/kitty/Gruvbox_Dark.conf".source = ./kitty/Gruvbox_Dark.conf;
+      ".config/kitty/kitty.conf".source = ./kitty/kitty.conf;
+      # Bash
+      ".bashrc".source = ./bashrc;
     };
     programs.waybar.enable = true;
     programs.tmux = {
@@ -265,7 +270,6 @@ in
     gruvbox-material-gtk-theme
     gruvbox-dark-icons-gtk
     gruvbox-kvantum
-    kitty-themes
 
 
     
@@ -377,14 +381,6 @@ in
 
   services.xserver.enable = true; # XOrg compatibility # maybe not required
   services.libinput.enable = true; # Required with lightdm for whatever reason
-  services.xserver.videoDrivers = [ "nvidia" ];
-
-  hardware.nvidia = {
-    modesetting.enable = true;
-    open = false;                         # use the proprietary driver for CUDA
-    nvidiaSettings = false;
-    powerManagement.enable = true;        # optional on laptops
-  };
 
   # Display Server -> Display Manager/Greeter -> DesktopEnv/WindowManager
 
