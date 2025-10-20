@@ -10,6 +10,7 @@ in
   [ 
     ./hardware-configuration.nix
     (import "${home-manager}/nixos")
+    ./modules/music.nix
   ]
   #++ lib.optionals (builtins.pathExists ./modules/nvidia.nix)     [ ./modules/nvidia.nix ]
   #++ lib.optionals (builtins.pathExists ./modules/intel-igpu.nix) [ ./modules/intel-igpu.nix ]
@@ -95,24 +96,6 @@ in
         enable = true;
         terminal = "tmux-256color";
         extraConfig = builtins.readFile ./tmux.conf;
-    };
-    services.mpd = {
-        enable = true;
-        musicDirectory = "/home/kmalone/Digital_Media/Music/";
-        extraConfig = ''
-            # must specify one or more outputs in order to play audio!
-            # (e.g. ALSA, PulseAudio, PipeWire), see next sections
-            audio_output {
-                type "pipewire" 
-                name "My PipeWire Output"
-            }
-        '';
-        # Optional:
-        #network.listenAddress = "any"; # if you want to allow non-localhost
-        #network.startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
-    };
-    programs.rmpc = {
-        enable = true;
     };
     gtk = {
       enable = true;
