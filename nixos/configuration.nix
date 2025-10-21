@@ -121,9 +121,13 @@ in
         package = pkgs.gruvbox-dark-gtk;
       };
       iconTheme = {
-        name = "Mint-L";
+        name = "Mint-L-Gruvbox-Dark";
         package = pkgs.mint-l-icons;
       };
+    };
+    qt = {
+      enable = true;
+      platformTheme = "gtk3";
     };
   };
   # END Home-Manager
@@ -190,17 +194,20 @@ in
     vesktop     # Unofficial Discord Client
     libreoffice-qt6-fresh # Comprehensive, professional-quality productivity suite, a variant of openoffice.org
     newsflash
+    freecad-wayland
 
     # Homelabbing
     kdePackages.kdeconnect-kde
     syncthing syncthingtray
+    openvpn
+    virt-viewer
 
     # Rice
     cava
     gotop
     fastfetch
     
-    # common utils
+    # common utilities (utils)
     wget 
     gcc
     git
@@ -218,6 +225,7 @@ in
     man-pages-posix
     linux-manual
     unzip
+    bzip3
 
     # Muh interpretted languages
     nodejs
@@ -270,8 +278,12 @@ in
     gruvbox-material-gtk-theme
     gruvbox-dark-icons-gtk
     gruvbox-kvantum
+    kdePackages.qt6gtk2
 
 
+    # Games
+    # Find missing game deps
+    # strace steam
     
     # Calculators
       # Default
@@ -341,6 +353,7 @@ in
 
     # Virtualization
     qemu_kvm virtio-win  # Windows virtio drivers ISO
+    qemu_full
     spice-gtk           # SPICE client libs
     quickemu quickgui   # zero-friction VM creation
     docker_28
@@ -370,8 +383,17 @@ in
     variables.VISUAL = "nvim";
     variables.WLR_NO_HARDWARE_CURSORS = "1";
     sessionVariables.NIXOS_OZONE_WL = "1"; # Hint Electron apps to use wayland
-    sessionVariables.KVANTUM_THEME = "Gruvbox";
+    sessionVariables.DEFAULT_BROWSER = "${pkgs.firefox}/bin/firefox";
+    variables.QT_STYLE_OVERRIDE = "kvantum";
     #sessionVariables.GTK_THEME= "Mint-Y-Dark";
+  };
+
+  xdg.mime.defaultApplications = {
+    #"text/html" = "org.qutebrowser.qutebrowser.desktop";
+    #"x-scheme-handler/http" = "org.qutebrowser.qutebrowser.desktop";
+    #"x-scheme-handler/https" = "org.qutebrowser.qutebrowser.desktop";
+    #"x-scheme-handler/about" = "org.qutebrowser.qutebrowser.desktop";
+    #"x-scheme-handler/unknown" = "org.qutebrowser.qutebrowser.desktop";
   };
 
   hardware.graphics = {
@@ -432,7 +454,7 @@ in
     package = pkgs.kdePackages.kdeconnect-kde;
   };
   hardware.uinput.enable = true; # required for phone -> mouse input may not be required
-  boot.kernelModules = [ "uinput" ];
+  boot.kernelModules = [ "uinput" "tun" ];
   networking.firewall = {
     allowedTCPPorts = [ 1714 1764 ];
     allowedUDPPorts = [ 1714 1764 ];
@@ -442,22 +464,15 @@ in
     KERNEL=="uinput", MODE="0660", GROUP="input", OPTIONS+="static_node=uinput"
   '';
 
-  # Syncthing Daemon
-  services.syncthing = {
-    enable = true;
-    package = pkgs.syncthing;
-    user = "kmalone";
-    dataDir = "/home/kmalone";
-    configDir = "/home/kmalone/.config/syncthing";
-    openDefaultPorts = true;
-  };
+
+  # -- Virtualisation --
 
   # KVM/QEMU setup
   virtualisation = {
     docker.enable = true; # Not needed for the rest of the qemu setup
     libvirtd.enable = true;
     libvirtd.qemu = {
-      package = pkgs.qemu_kvm;
+      package = pkgs.qemu_full;
       ovmf.enable = true;
       swtpm.enable = true;
       runAsRoot = false;
@@ -466,6 +481,24 @@ in
   };
   programs.virt-manager.enable = true;
 
+  # Bridge Declaration
+  networking.bridges.br0.interfaces = [ "enp0s9" ];
+  networking.interfaces.br0.useDHCP = true;
+  networking.firewall.trustedInterfaces = [ "br0" ];
+
+  # QEMU bridge ACL
+  environment.etc."qemu/bridge.conf".text = ''
+    allow br0
+  '';
+
+    #security.wrappers."qemu-bridge-helper" = {
+    #source = "${pkgs.qemu}/libexec/qemu-bridge-helper";
+    #owner = "root";
+    #group = "root";
+    #permissions = "u+sx,g+x,o+x";
+  #};
+
+  # -- Gaming --
   # Steam
   programs.gamemode.enable = true;
   programs.steam = {
@@ -473,11 +506,35 @@ in
     remotePlay.openFirewall = true; # Required for Steam Remote Play
     dedicatedServer.openFirewall = true; # Required for Source Dedicated Server
     localNetworkGameTransfers.openFirewall = true; # Required for Steam Local Network Transfers
+    package = pkgs.steam.override {
+      extraPkgs = pkgs: with pkgs; [
+        SDL2
+        libjpeg
+        openal
+        mono
+        vulkan-loader
+        dbus
+      ];
+    };
   };
 
   documentation.man = {
     enable = true;
     generateCaches = true;
+  };
+
+  # -- Networking --
+  # Openvpn
+  services.resolved.enable = true;
+
+  # Syncthing Daemon
+  services.syncthing = {
+    enable = true;
+    package = pkgs.syncthing;
+    user = "kmalone";
+    dataDir = "/home/kmalone";
+    configDir = "/home/kmalone/.config/syncthing";
+    openDefaultPorts = true;
   };
 
   # List services that you want to enable:
