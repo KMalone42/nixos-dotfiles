@@ -1,0 +1,22 @@
+local M = {}
+
+function M.setup(buf)
+  -- buffer-local options
+  vim.bo[buf].expandtab    = true
+  vim.bo[buf].tabstop      = 4
+  vim.bo[buf].shiftwidth   = 4
+  vim.bo[buf].softtabstop  = 4
+
+  -- (optional) LuaSnip: load only python snippets from your tree
+  -- If you already use lazy_load at startup, you can skip this.
+  local ok, loader = pcall(require, "luasnip.loaders.from_lua")
+  if ok then
+    loader.load({
+      paths = vim.fn.stdpath("config") .. "/lua/snippets/python",
+      include = { "python" },
+    })
+  end
+end
+
+return M
+

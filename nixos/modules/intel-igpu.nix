@@ -2,9 +2,9 @@
 
 {
   #### X11 driver (safe even if you mostly use Wayland)
-  services.xserver.videoDrivers = [ "modesetting" ];
+  # services.xserver.videoDrivers = [ "modesetting" ];
   # If you *really* want the legacy intel DDX:
-  # services.xserver.videoDrivers = [ "intel" ];
+  services.xserver.videoDrivers = [ "intel" ];
 
   #### Graphics stack (NixOS ≥ 24.05 uses hardware.graphics)
   hardware.graphics = {

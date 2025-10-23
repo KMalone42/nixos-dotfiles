@@ -67,25 +67,3 @@ function reset-display () {
     sudo systemctl restart displaylink.service
     sudo systemctl restart display-manager
 }
-
-# Clear SSH known_hosts cache
-clear_known_hosts() {
-    local kh_file="${HOME}/.ssh/known_hosts"
-
-    # Safety check
-    if [[ ! -f "$kh_file" ]]; then
-        echo "No known_hosts file found."
-        return 1
-    fi
-
-    echo "This will remove all entries from $kh_file"
-    read -p "Are you sure? (y/N): " ans
-    [[ "$ans" =~ ^[Yy]$ ]] || { echo "Cancelled."; return 0; }
-
-    # Backup then clear
-    cp "$kh_file" "${kh_file}.bak.$(date +%Y%m%d%H%M%S)"
-    > "$kh_file"
-
-    echo "known_hosts cleared. Backup saved as ${kh_file}.bak.*"
-}
-

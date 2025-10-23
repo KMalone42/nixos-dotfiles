@@ -10,8 +10,10 @@ in
   [ 
     ./hardware-configuration.nix
     (import "${home-manager}/nixos")
+    ./modules/music.nix
+    ./modules/gaming.nix
   ]
-  ++ lib.optionals (builtins.pathExists ./modules/nvidia.nix)     [ ./modules/nvidia.nix ]
+  #++ lib.optionals (builtins.pathExists ./modules/nvidia.nix)     [ ./modules/nvidia.nix ]
   #++ lib.optionals (builtins.pathExists ./modules/intel-igpu.nix) [ ./modules/intel-igpu.nix ]
   ;
     
@@ -71,7 +73,10 @@ in
   home-manager.users.kmalone = { pkgs, ...}: {
     home.packages = [ pkgs.atool pkgs.httpie ];
     home.stateVersion = "25.05";
-
+    xdg.configFile."nvim" = {
+      source = ./nvim;
+      recursive = true;
+    };
     home.file = {
       # Waybar
       ".config/waybar/config.jsonc".source = ./waybar/config.jsonc;
@@ -96,24 +101,6 @@ in
         terminal = "tmux-256color";
         extraConfig = builtins.readFile ./tmux.conf;
     };
-    services.mpd = {
-        enable = true;
-        musicDirectory = "/home/kmalone/Digital_Media/Music/";
-        extraConfig = ''
-            # must specify one or more outputs in order to play audio!
-            # (e.g. ALSA, PulseAudio, PipeWire), see next sections
-            audio_output {
-                type "pipewire" 
-                name "My PipeWire Output"
-            }
-        '';
-        # Optional:
-        #network.listenAddress = "any"; # if you want to allow non-localhost
-        #network.startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
-    };
-    programs.rmpc = {
-        enable = true;
-    };
     gtk = {
       enable = true;
       theme = {
@@ -121,7 +108,7 @@ in
         package = pkgs.gruvbox-dark-gtk;
       };
       iconTheme = {
-        name = "Mint-L-Gruvbox-Dark";
+        name = "Mint-L";
         package = pkgs.mint-l-icons;
       };
     };
@@ -281,9 +268,6 @@ in
     kdePackages.qt6gtk2
 
 
-    # Games
-    # Find missing game deps
-    # strace steam
     
     # Calculators
       # Default
@@ -388,14 +372,6 @@ in
     #sessionVariables.GTK_THEME= "Mint-Y-Dark";
   };
 
-  xdg.mime.defaultApplications = {
-    #"text/html" = "org.qutebrowser.qutebrowser.desktop";
-    #"x-scheme-handler/http" = "org.qutebrowser.qutebrowser.desktop";
-    #"x-scheme-handler/https" = "org.qutebrowser.qutebrowser.desktop";
-    #"x-scheme-handler/about" = "org.qutebrowser.qutebrowser.desktop";
-    #"x-scheme-handler/unknown" = "org.qutebrowser.qutebrowser.desktop";
-  };
-
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
@@ -454,7 +430,7 @@ in
     package = pkgs.kdePackages.kdeconnect-kde;
   };
   hardware.uinput.enable = true; # required for phone -> mouse input may not be required
-  boot.kernelModules = [ "uinput" "tun" ];
+  boot.kernelModules = [ "uinput" ];
   networking.firewall = {
     allowedTCPPorts = [ 1714 1764 ];
     allowedUDPPorts = [ 1714 1764 ];
@@ -465,7 +441,7 @@ in
   '';
 
 
-  # -- Virtualisation --
+# -- Virtualisation --
 
   # KVM/QEMU setup
   virtualisation = {
@@ -490,33 +466,6 @@ in
   environment.etc."qemu/bridge.conf".text = ''
     allow br0
   '';
-
-    #security.wrappers."qemu-bridge-helper" = {
-    #source = "${pkgs.qemu}/libexec/qemu-bridge-helper";
-    #owner = "root";
-    #group = "root";
-    #permissions = "u+sx,g+x,o+x";
-  #};
-
-  # -- Gaming --
-  # Steam
-  programs.gamemode.enable = true;
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true; # Required for Steam Remote Play
-    dedicatedServer.openFirewall = true; # Required for Source Dedicated Server
-    localNetworkGameTransfers.openFirewall = true; # Required for Steam Local Network Transfers
-    package = pkgs.steam.override {
-      extraPkgs = pkgs: with pkgs; [
-        SDL2
-        libjpeg
-        openal
-        mono
-        vulkan-loader
-        dbus
-      ];
-    };
-  };
 
   documentation.man = {
     enable = true;
