@@ -19,8 +19,15 @@ case "$SOURCE" in
     *) SOURCE="${SOURCE}/" ;;
 esac
 
+sudo cp /etc/nixos/hardware-configuration.nix "$SOURCE"
+if [ -f /etc/nixos/configuration.nix.save ]; then
+    sudo cp /etc/nixos/configuration.nix.save "$SOURCE"
+else
+    echo "Warning: /etc/nixos/configuration.nix.save not found, creating backup."
+    sudo cp /etc/nixos/configuration.nix /etc/nixos/configuration.nix.save
+fi
 
-sudo rsync -a \
+sudo rsync -a --delete \
     --exclude 'hardware-configuration' \
     --exclude 'configuration.nix.save' \
     "$SOURCE" "$NIXOS_DIR"
