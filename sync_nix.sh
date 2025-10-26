@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 NIXPKGS="/nix/var/nix/profiles/per-user/root/channels/nixos"
-NIXOS_DIR="/etc/nixos/"
+NIXOS_DIR="/etc/nixos"
 
 SOURCE="${1:-}"
 
@@ -30,5 +30,5 @@ fi
 sudo rsync -a --delete \
     --exclude 'hardware-configuration' \
     --exclude 'configuration.nix.save' \
-    "$SOURCE" "$NIXOS_DIR"
-sudo chown $root:root -R "$NIXOS_DIR"
+    "$SOURCE" "$NIXOS_DIR"/
+sudo chown root:root -R "$NIXOS_DIR"
