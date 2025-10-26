@@ -31,4 +31,4 @@ sudo rsync -a --delete \
     --exclude 'hardware-configuration' \
     --exclude 'configuration.nix.save' \
     "$SOURCE" "$NIXOS_DIR"
-sudo chown $USER:users --recursive "$NIXOS_DIR"
+sudo chown $root:root -R "$NIXOS_DIR"
