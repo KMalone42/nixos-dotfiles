@@ -20,7 +20,7 @@ case "$SOURCE" in
 esac
 
 
-sudo rsync -a --delete \
+sudo rsync -a \
     --exclude 'hardware-configuration' \
     --exclude 'configuration.nix.save' \
     "$SOURCE" "$NIXOS_DIR"
