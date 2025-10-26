@@ -1,0 +1,55 @@
+  myFirefox = pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
+    nixExtensions = [
+      (pkgs.fetchFirefoxAddon {
+        name = "ublock-origin";
+        url = "https://addons.mozilla.org/firefox/downloads/file/4598854/ublock_origin-1.67.0.xpi";
+        sha256 = "1fg7qlpmlmwkrgbxd4yif35bdd7mpl0kh8dpfa0fjhgbh7k2v3jz";
+      })
+        
+      (pkgs.fetchFirefoxAddon {
+        name = "gruvbox-theme";
+        url = "https://addons.mozilla.org/firefox/downloads/file/3729287/gruvboxgruvboxgruvboxgruvboxgr-1.0.xpi";
+        sha256 = "1kjs4lb7pwpjhy0ysgibbzm09y9mc8rm032fmzpiwniwzvrmjq1m";
+      })
+      (pkgs.fetchFirefoxAddon {
+        name = "simple-tab-groups";
+        url = "https://addons.mozilla.org/firefox/downloads/file/4469818/simple_tab_groups-5.3.2.xpi";
+        sha256 = "0cbd3hm0539jbl98jnmgms5c1cdis9vmc0n0pw2dsixwymaq6nyj";
+      })
+      (pkgs.fetchFirefoxAddon {
+        name = "time-tracker";
+        url = "https://addons.mozilla.org/firefox/downloads/file/4602915/besttimetracker-3.6.8.xpi";
+        sha256 = "0vv9f1643wk41inflbaahglzk5z49p22kc3v8518saxax4ywwaw3";
+      })
+      # (Optional) Vertical tabs in sidebar:
+      # (pkgs.fetchFirefoxAddon {
+      #   name = "sidebery";
+      #   url  = "<Sidebery XPI URL>";
+      #   sha256 = "<base32-hash>";
+      # })
+    ];
+
+    extraPolicies = {
+      CaptivePortal = false;
+      DisableFirefoxStudies = true;
+      DisablePocket = true;
+      DisableTelemetry = true;
+      DisableFirefoxAccounts = true;
+      FirefoxHome = { Pocket = false; Snippets = false; };
+      UserMessaging = { ExtensionRecommendations = false; SkipOnboarding = true; };
+      SecurityDevices = { "PKCS#11 Proxy Module" = "${pkgs.p11-kit}/lib/p11-kit-proxy.so"; };
+    };
+
+    extraPrefs = ''
+      // Security / UX prefs you previously had under programs.firefox.settings
+      lockPref("dom.security.https_only_mode", true);
+      lockPref("browser.download.panel.shown", true);
+      lockPref("identity.fxaccounts.enabled", false);
+      lockPref("signon.rememberSignons", false);
+
+      // Sidebar tweaks
+      lockPref("sidebar.position_start", true); // left side
+      // Note: auto-open on startup generally needs a sidebar add-on (e.g., Sidebery).
+    '';
+  };
+

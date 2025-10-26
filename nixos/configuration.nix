@@ -69,37 +69,39 @@ in
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
   home-manager.backupFileExtension = "backup";
-
   home-manager.users.kmalone = { pkgs, ...}: {
+    imports = [./home-modules/firefox.nix];
+  
     home.packages = [ pkgs.atool pkgs.httpie ];
     home.stateVersion = "25.05";
     xdg.configFile."nvim" = {
-      source = ./nvim;
+      source = ./home-modules/nvim;
       recursive = true;
     };
     home.file = {
-      # Waybar
-      ".config/waybar/config.jsonc".source = ./waybar/config.jsonc;
-      ".config/waybar/style.css".source     = ./waybar/style.css;
-      # Hypr
-      ".config/hypr/hyprland.conf".source   = ./hypr/hyprland.conf;
-      ".config/hypr/hyprpaper.conf".source  = ./hypr/hyprpaper.conf;
-      ".config/hypr/hypridle.conf".source   = ./hypr/hypridle.conf;
-      ".config/hypr/hyprlock.conf".source   = ./hypr/hyprlock.conf;
-      # Wofi
-      ".config/wofi/config".source = ./wofi/config;
-      ".config/wofi/style.css".source = ./wofi/style.css;
-      # Kitty
-      ".config/kitty/Gruvbox_Dark.conf".source = ./kitty/Gruvbox_Dark.conf;
-      ".config/kitty/kitty.conf".source = ./kitty/kitty.conf;
-      # Bash
-      ".bashrc".source = ./bashrc;
+      ".config/waybar".source    = ./home-modules/waybar;
+      ".config/waybar".recursive = true;
+
+      ".config/hypr".source    = ./home-modules/hypr;
+      ".config/hypr".recursive = true;
+
+      ".config/wofi".source    = ./home-modules/wofi;
+      ".config/wofi".recursive = true;
+
+      ".config/kitty".source    = ./home-modules/kitty;
+      ".config/kitty".recursive = true;
+
+      ".config/wallpapers".source = ./home-modules/wallpapers;
+      ".config/wallpapers".recursive = true;
+
+      ".bashrc".source = ./home-modules/bashrc;
     };
+
     programs.waybar.enable = true;
     programs.tmux = {
         enable = true;
         terminal = "tmux-256color";
-        extraConfig = builtins.readFile ./tmux.conf;
+        extraConfig = builtins.readFile ./home-modules/tmux.conf;
     };
     gtk = {
       enable = true;
@@ -170,7 +172,6 @@ in
     # Productivity
     bitwarden-desktop # Password Manager
     chromium # Open source web browser from Google
-    firefox  # Mozilla's Firefox web browser
     gimp3    # GNU Image Manipulation Program
     inkscape # Vector graphics editor
     neovim      # Vim-fork focused on extensbility and usability
