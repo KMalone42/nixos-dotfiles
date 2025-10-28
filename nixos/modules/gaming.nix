@@ -26,4 +26,6 @@ in
     localNetworkGameTransfers.openFirewall = true; # Required for Steam Local Network Transfers
     extraPackages = steamRuntimeLibs;
   };
+
+  services.flatpak.enable = true;
 }
