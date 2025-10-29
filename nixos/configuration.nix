@@ -9,12 +9,14 @@ in
   imports =
   [ 
     ./hardware-configuration.nix
-    (import "${home-manager}/nixos")
+    ./modules/nvidia.nix
+    #./modules/intel-igpu.nix
     ./modules/music.nix
     ./modules/gaming.nix
+    #./modules/printers.nix
+    ./modules/octoprint.nix
+    (import "${home-manager}/nixos")
   ]
-  #++ lib.optionals (builtins.pathExists ./modules/nvidia.nix)     [ ./modules/nvidia.nix ]
-  #++ lib.optionals (builtins.pathExists ./modules/intel-igpu.nix) [ ./modules/intel-igpu.nix ]
   ;
     
   # Bootloader.
@@ -116,29 +118,15 @@ in
     };
     qt = {
       enable = true;
-      platformTheme = "gtk3";
+      platformTheme.name = "gtk3";
     };
   };
   # END Home-Manager
 
-        #  gtk = {
-        #    enable = true;
-        #    theme = {
-        #      name = "Adwaita-dark";
-        #      package = pkgs.gnome.gnome-themes-extra;
-        #    };
-    #  };
-
-        #  qt = {
-        #    enable = true;
-        #    platform = "qtct";
-        #    style = "kvantum";
-    #  };
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
   # BEGIN Packages
+
+  nixpkgs.config.allowUnfree = true; # Allow unfree packages
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -183,6 +171,7 @@ in
     libreoffice-qt6-fresh # Comprehensive, professional-quality productivity suite, a variant of openoffice.org
     newsflash
     freecad-wayland
+    cura-appimage
 
     # Homelabbing
     syncthing syncthingtray
