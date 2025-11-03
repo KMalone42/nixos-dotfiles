@@ -9,12 +9,13 @@ in
   imports =
   [ 
     ./hardware-configuration.nix
-    ./modules/nvidia.nix
+    #./modules/nvidia.nix
     #./modules/intel-igpu.nix
     ./modules/music.nix
     ./modules/gaming.nix
     #./modules/printers.nix
-    ./modules/octoprint.nix
+    #./modules/octoprint.nix
+    ./modules/keyboard.nix
     (import "${home-manager}/nixos")
   ]
   ;
@@ -115,6 +116,12 @@ in
         name = "Mint-L";
         package = pkgs.mint-l-icons;
       };
+      gtk3.extraConfig = {
+         gtk-im-module = "fcitx";
+      };
+      gtk4.extraConfig = {
+         gtk-im-module = "fcitx";
+      };
     };
     qt = {
       enable = true;
@@ -172,6 +179,7 @@ in
     newsflash
     freecad-wayland
     cura-appimage
+    prusa-slicer
 
     # Homelabbing
     syncthing syncthingtray
