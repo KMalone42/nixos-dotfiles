@@ -110,7 +110,7 @@ in
       enable = true;
       theme = {
         name = "Gruvbox-Dark";
-        package = pkgs.gruvbox-dark-gtk;
+        package = pkgs.gruvbox-gtk-theme;
       };
       iconTheme = {
         name = "Gruvbox-Material-Dark";
@@ -257,8 +257,6 @@ in
     libsForQt5.qtstyleplugin-kvantum kdePackages.qtstyleplugin-kvantum # SVG-based Qt5 theme engine plus a config tool and extra themes
     nemo
     kdePackages.qt6gtk2
-
-
     
     # Calculators
       # Default
