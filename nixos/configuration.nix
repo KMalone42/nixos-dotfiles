@@ -113,8 +113,8 @@ in
         package = pkgs.gruvbox-dark-gtk;
       };
       iconTheme = {
-        name = "Mint-L";
-        package = pkgs.mint-l-icons;
+        name = "Gruvbox-Material-Dark";
+        package = pkgs.gruvbox-material-gtk-theme;
       };
       gtk3.extraConfig = {
          gtk-im-module = "fcitx";
@@ -210,6 +210,7 @@ in
     linux-manual
     unzip
     bzip3
+    nwg-look
 
     # Muh interpretted languages
     nodejs
@@ -253,15 +254,8 @@ in
     kdePackages.breeze-gtk
     kdePackages.breeze-icons
     bibata-cursors
-    themechanger # Theme changing utility for Linux
     libsForQt5.qtstyleplugin-kvantum kdePackages.qtstyleplugin-kvantum # SVG-based Qt5 theme engine plus a config tool and extra themes
-    mint-themes mint-l-icons mint-x-icons mint-y-icons # mint icon and themes
     nemo
-    gruvbox-dark-gtk
-    gruvbox-gtk-theme
-    gruvbox-material-gtk-theme
-    gruvbox-dark-icons-gtk
-    gruvbox-kvantum
     kdePackages.qt6gtk2
 
 
@@ -330,7 +324,6 @@ in
     # NOT WORKING
     #kdePackages.plasma-systemmonitor # provides usage statistics such as CPU%
     #kdePackages.kamoso
-    #nwg-look # a GTK3 settings editor adapted to work in the wlroots environment
 
     # Virtualization
     qemu_kvm virtio-win  # Windows virtio drivers ISO
