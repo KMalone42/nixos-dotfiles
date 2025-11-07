@@ -9,7 +9,7 @@ in
   imports =
   [ 
     ./hardware-configuration.nix
-    #./modules/nvidia.nix
+    ./modules/nvidia.nix
     #./modules/intel-igpu.nix
     ./modules/music.nix
     ./modules/gaming.nix

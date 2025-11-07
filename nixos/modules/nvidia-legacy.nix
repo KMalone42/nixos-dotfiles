@@ -9,9 +9,8 @@
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true;
-    open = true; # don't use proprietary drivers for >20 series
+    open = false; # don't use proprietary drivers for >20 series
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.latest;
   };
 
   boot.kernelParams = [ "nvidia_drm.modeset=1" ];
