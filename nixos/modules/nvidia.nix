@@ -1,21 +1,13 @@
 { config, lib, pkgs, ... }:
 
 {
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
+  services.xserver.videoDrivers = [ "nvidia" ];
 
   hardware.nvidia = {
     modesetting.enable = true;
+    open = false;              # proprietary driver for CUDA
+    nvidiaSettings = false;
     powerManagement.enable = true;
-    open = true; # don't use proprietary drivers for >20 series
-    nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.latest;
   };
-
-  boot.kernelParams = [ "nvidia_drm.modeset=1" ];
-
-  services.xserver.videoDrivers = [ "nvidia" ];
 }
 
