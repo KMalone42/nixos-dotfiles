@@ -16,17 +16,8 @@ bind "set show-all-if-ambiguous on"
 export PATH="$HOME/.local/bin/:$PATH"
 export SUDO_EDITOR="nvim"
 export EDITOR="nvim"
-# Allow unfree packages to be temporarily run with nix-shell -p 'foo'
-# Required for ollama
-export NIXPKGS_ALLOW_UNFREE=1
-export OLLAMA_FLASH_ATTENTION=0   # turn off FA kernels (Pascal-safe)
-export OLLAMA_NUM_GPU=1
-export OLLAMA_CUDA=1
-export CUDA_VISIBLE_DEVICES=0
-export OLLAMA_KV_CACHE_TYPE=f16   # smaller KV cache than fp32
-export OLLAMA_MAX_CONTEXT=2048     # reduce ctx from 4096
-export OLLAMA_BATCH_SIZE=1         # reduce batch size
 export MANPATH="/run/nixos/sw/share/man"
+export NIXPKGS_ALLOW_UNFREE=1 # Allow unfree packages to be temporarily run with nix-shell -p 'foo'
 
 ## Aliases
 # Nix

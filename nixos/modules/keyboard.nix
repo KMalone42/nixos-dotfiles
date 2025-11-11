@@ -26,20 +26,21 @@ in
   };
 
   i18n.inputMethod = {
-     type = "fcitx5";
-     enable = true;
-     fcitx5.addons = with pkgs; [
-       fcitx5-gtk             # alternatively, kdePackages.fcitx5-qt
-       fcitx5-chinese-addons  # table input method support
-       fcitx5-nord            # a color theme
-     ];
-   };
+    type = "fcitx5";
+    enable = true;
+    fcitx5.addons = with pkgs; [
+      fcitx5-gtk             # alternatively, kdePackages.fcitx5-qt
+      fcitx5-chinese-addons  # table input method support
+      fcitx5-nord            # a color theme
+    ];
+  };
+
    
   # Wayland-friendly env: unset GTK_IM_MODULE, keep QT using fcitx.
-  environment.sessionVariables = {
-    QT_IM_MODULE  = lib.mkDefault "fcitx";
-    XMODIFIERS    = lib.mkDefault "@im=fcitx";
-  };
+  #environment.sessionVariables = {
+    #QT_IM_MODULE  = lib.mkDefault "fcitx";
+    #XMODIFIERS    = lib.mkDefault "@im=fcitx";
+  #};
 
   # Fonts so CJK renders nicely
   fonts.packages = with pkgs; [

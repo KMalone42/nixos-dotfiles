@@ -16,6 +16,7 @@ in
     #./modules/printers.nix
     #./modules/octoprint.nix
     ./modules/keyboard.nix
+    ./modules/polkit.nix
     (import "${home-manager}/nixos")
   ]
   ;
@@ -212,6 +213,10 @@ in
     bzip3
     nwg-look
 
+    # device utilities
+    rpi-imager
+    # android-tools
+
     # Muh interpretted languages
     nodejs
     (python313.withPackages (ps: with ps; [
@@ -356,7 +361,7 @@ in
     variables.WLR_NO_HARDWARE_CURSORS = "1";
     sessionVariables.NIXOS_OZONE_WL = "1"; # Hint Electron apps to use wayland
     sessionVariables.DEFAULT_BROWSER = "${pkgs.firefox}/bin/firefox";
-    variables.QT_STYLE_OVERRIDE = "kvantum";
+    #variables.QT_STYLE_OVERRIDE = "kvantum";
     #sessionVariables.GTK_THEME= "Mint-Y-Dark";
   };
 
