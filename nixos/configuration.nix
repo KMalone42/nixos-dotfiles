@@ -78,10 +78,6 @@ in
   
     home.packages = [ pkgs.atool pkgs.httpie ];
     home.stateVersion = "25.05";
-    xdg.configFile."nvim" = {
-      source = ./home-modules/nvim;
-      recursive = true;
-    };
     home.file = {
       ".config/waybar".source    = ./home-modules/waybar;
       ".config/waybar".recursive = true;

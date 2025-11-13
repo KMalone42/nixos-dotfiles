@@ -2,19 +2,18 @@
 local M = {}
 local did_setup = false
 
+local lsp = require("langs.lsp")
+
 function M.setup(buf)
-  -- buffer-local options
+  -- buffer-local options (run on every Python buffer)
   vim.bo[buf].expandtab    = true
   vim.bo[buf].tabstop      = 4
   vim.bo[buf].shiftwidth   = 4
   vim.bo[buf].softtabstop  = 4
 
+  -- Everything below only runs once (first Python buffer opened)
   if did_setup then return end
   did_setup = true
-
-  -- Try to load LuaSnip and wire up once
-  local ok, ls = pcall(require, "luasnip")
-  if not ok then return end
 
   -- Basic keymaps (only set once)
   local map = vim.keymap.set
@@ -25,6 +24,45 @@ function M.setup(buf)
   ls.config.setup({
     update_events = "TextChanged,TextChangedI",
   })
+
+  -----------------------------------------------------------------------------
+  --- LSP setup
+  -----------------------------------------------------------------------------
+
+  local function on_attach(client, bufnr)
+    -- per-buffer LSP keymaps
+    local function buf_map(lhs, rhs, desc)
+      vim.keymap.set("n", lhs, rhs, { buffer = bufnr, desc = desc })
+    end
+
+    buf_map("gd", vim.lsp.buf.definition, "Go to definition")
+    buf_map("K",  vim.lsp.buf.hover,      "Hover docs")
+    buf_map("<leader>rn", vim.lsp.buf.rename, "Rename symbol")
+    buf_map("<leader>ca", vim.lsp.buf.code_action, "Code action")
+  end
+
+  lsp.ensure("pyright", {
+    on_attach = on_attach,
+    -- for NixOS, you can be explicit if needed:
+    -- cmd = { "pyright-langserver", "--stdio" },
+
+    -- example settings (optional)
+    settings = {
+      python = {
+        analysis = {
+          typeCheckingMode = "basic",
+          autoImportCompletions = true,
+        },
+      },
+    },
+  })
+
+  -----------------------------------------------------------------------------
+  --- LuaSnip
+  --- -------------------------------------------------------------------------
+
+  local ok, ls = pcall(require, "luasnip")
+  if not ok then return end
 
   -- Register the snippet for Python
   local s  = ls.snippet

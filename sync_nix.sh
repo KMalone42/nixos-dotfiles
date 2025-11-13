@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Usage: ./sync_nix.sh /path/to/nixos-tree
+# Usage:$ ./sync_nix.sh <targeted/tree/nixos/>
 # Takes targeted nix tree and syncs it to your /etc/nixos/ 
 # ensures owner and permissions are correct
 NIXPKGS="/nix/var/nix/profiles/per-user/root/channels/nixos"

@@ -11,5 +11,5 @@ fi
 DEST="$1"
 
 # Run rsync and chown using that argument
-sudo rsync -a --delete /etc/nixos/ "$DEST"
+sudo rsync -a --delete /etc/nixos/home-modules/nvim/ "$DEST"
 sudo chown -R "$USER:users" "$DEST"
