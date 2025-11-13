@@ -35,6 +35,7 @@ alias nvimdiff='nvim -d'
 alias vinegar='flatpak run org.vinegarhq.Vinegar'
 alias rebuild='sudo nixos-rebuild switch'
 alias lsusb='cyme'
+alias diff='diff --color=always'
 
 [[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
 

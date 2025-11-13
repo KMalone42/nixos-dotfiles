@@ -270,8 +270,10 @@ in
 
     # GNOME pkgs
     gnome-decoder # QR codes
-    gtg
-    gnome-frog
+    gtg # getting things done
+    gnome-frog # Screen OCR utility
+    gnome-online-accounts-gtk
+    gnome-online-accounts # deps for gnome-online-accounts-gtk
 
     # Webcams
       #GNOME

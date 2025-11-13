@@ -56,7 +56,7 @@ in
         /* some css */
       '';
 
-      # This now works — using Rycee’s NUR packages
+      # use Rycee’s NUR packages
       extensions.packages = with ffAddons.firefox-addons; [
         gruvbox-dark-theme
         bitwarden
@@ -64,6 +64,9 @@ in
         simple-tab-groups
         sponsorblock
         youtube-shorts-block
+        leechblock-ng
+        darkreader
+        zhongwen
       ];
     };
   };
