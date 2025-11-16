@@ -67,6 +67,7 @@ in
         leechblock-ng
         darkreader
         zhongwen
+        stylus
       ];
     };
   };
