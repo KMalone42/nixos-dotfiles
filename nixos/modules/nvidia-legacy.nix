@@ -1,3 +1,4 @@
+# modules/nvidia-legacy.nix
 { config, lib, pkgs, ... }:
 
 {
@@ -17,4 +18,3 @@
 
   services.xserver.videoDrivers = [ "nvidia" ];
 }
-
