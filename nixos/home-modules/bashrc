@@ -87,4 +87,43 @@ function git-set-upstream () {
     fi
 }
 
+# usage git-get-subdir <https://github.com/rafamadriz/friendly-snippets/tree/main/snippets/python>
+function git-get-subdir () {
+
+    local url="$1"
+    local api_url=""
+
+    if [[ "$url" =~ api.github.com/repos/.*/contents/ ]]; then
+        api_url="$url"
+    else
+        local stripped="${url#https://github.com/}"
+        stripped="${stripped#http://github.com/}"
+
+        # Split into components
+        # stripped = user/repo/tree/branch/path/to/subdir
+        local user repo tree branch path
+
+        user=$(echo "$stripped" | cut -d/ -f1)
+        repo=$(echo "$stripped" | cut -d/ -f2)
+        tree=$(echo "$stripped" | cut -d/ -f3)     # should be "tree"
+        branch=$(echo "$stripped" | cut -d/ -f4)
+        path=$(echo "$stripped" | cut -d/ -f5-)
+
+        if [[ "$tree" != "tree" ]]; then
+            echo "ERROR: URL does not contain /tree/: $url"
+            return 1
+        fi
+
+        api_url="https://api.github.com/repos/$user/$repo/contents/$path?ref=$branch"
+    fi
+
+    echo "API URL: $api_url"
+    echo
+
+    curl -s "$api_url" \
+    | jq -r '.[] | select(.type=="file") | .download_url' \
+    | while read -r url; do
+        echo "Downloading $(basename "$url")"
+        curl -sL "$url" -o "$(basename "$url")"
+      done
 }

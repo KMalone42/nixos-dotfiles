@@ -208,6 +208,7 @@ in
     unzip
     bzip3
     nwg-look
+    jq
 
     # device utilities
     rpi-imager
