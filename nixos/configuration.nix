@@ -210,6 +210,7 @@ in
     bzip3
     nwg-look
     jq
+    cups # Standards-based printing system for UNIX
 
     # device utilities
     rpi-imager
@@ -221,6 +222,18 @@ in
       pip mutagen numpy scipy pandas matplotlib jupyterlab ipython 
       scikit-learn pillow requests sqlalchemy aiosqlite opencv4
     ]))
+
+    # LSPs
+    pyright
+    lua-language-server
+    systemd-language-server
+    vim-language-server
+    typescript-language-server
+    kotlin-language-server
+    java-language-server
+    docker-language-server
+    bash-language-server
+    awk-language-server
 
     # screenshots
     grim slurp
@@ -460,6 +473,15 @@ in
     dataDir = "/home/kmalone";
     configDir = "/home/kmalone/.config/syncthing";
     openDefaultPorts = true;
+  };
+
+
+  # neovim
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+    viAlias = true;
+    vimAlias = true;
   };
 
   # List services that you want to enable:
