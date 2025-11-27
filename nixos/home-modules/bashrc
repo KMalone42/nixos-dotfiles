@@ -127,3 +127,14 @@ function git-get-subdir () {
         curl -sL "$url" -o "$(basename "$url")"
       done
 }
+
+function git-fetch-all () {
+    # Crawl all directories containing a .git folder and run git fetch
+    find . -name ".git" -type d | while read -r repo; do
+        dir="$(dirname "$repo")"
+        echo "🔄 Fetching in $dir"
+        git -C "$dir" fetch --all --prune
+    done
+
+    echo "Done."
+}

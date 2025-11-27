@@ -10,10 +10,11 @@ in
   [ 
     ./hardware-configuration.nix
     #./modules/nvidia.nix
-    #./modules/nvidia-legacy.nix
+    ./modules/nvidia-legacy.nix
     #./modules/intel-igpu.nix
     ./modules/music.nix
     ./modules/gaming.nix
+    ./modules/nvim.nix
     #./modules/printers.nix
     #./modules/octoprint.nix
     ./modules/keyboard.nix
@@ -32,9 +33,6 @@ in
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
-  networking.networkmanager.enable = true;
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -168,7 +166,6 @@ in
     gimp3    # GNU Image Manipulation Program
     inkscape # Vector graphics editor
     neovim      # Vim-fork focused on extensbility and usability
-    tree-sitter # CLI for :TSInstallFromGrammar
     rclone      # Command line program to sync files and directories to and from major cloud storage
     thunderbird # Mozilla's "Full-featured e-mail client"
     tmux        # a terminal multiplexer
@@ -182,6 +179,10 @@ in
     # Homelabbing
     syncthing syncthingtray
     openvpn
+    # wrapper that exposes `update-systemd-resolved` in /run/current-system/sw/bin
+    (pkgs.writeShellScriptBin "update-systemd-resolved" ''
+      exec ${pkgs.update-systemd-resolved}/libexec/openvpn/update-systemd-resolved "$@"
+    '')
     virt-viewer
 
     # Rice
@@ -192,13 +193,14 @@ in
     # common utilities (utils)
     wget 
     gcc
+    clang
     git
     mpv
     busybox
     scdoc
     cmake
     efibootmgr
-    tlrc
+    tlrc # tldr client written in rust
     man
     cyme # Modern cross-platform lsusb
     gnumake42 # Tool to control the generation of non-source files from sources
@@ -223,17 +225,8 @@ in
       scikit-learn pillow requests sqlalchemy aiosqlite opencv4
     ]))
 
-    # LSPs
-    pyright
-    lua-language-server
-    systemd-language-server
-    vim-language-server
-    typescript-language-server
-    kotlin-language-server
-    java-language-server
-    docker-language-server
-    bash-language-server
-    awk-language-server
+    # Muh low-level langauges
+    cargo rustc
 
     # screenshots
     grim slurp
@@ -252,7 +245,6 @@ in
 
     # kdePackages
     kdePackages.qtsvg
-
     kdePackages.isoimagewriter
     kdePackages.kio-gdrive # KIO Worker to access Google Drive
     kdePackages.kio-fuse   # to mount remote filesystems via FUSE
@@ -368,9 +360,6 @@ in
 
   # Environment Variables
   environment = {
-    variables.EDITOR = "nvim";
-    variables.SUDO_EDITOR = "nvim";
-    variables.VISUAL = "nvim";
     variables.WLR_NO_HARDWARE_CURSORS = "1";
     sessionVariables.NIXOS_OZONE_WL = "1"; # Hint Electron apps to use wayland
     sessionVariables.DEFAULT_BROWSER = "${pkgs.firefox}/bin/firefox";
@@ -424,6 +413,16 @@ in
   services.pipewire.wireplumber.configPackages = [];
 
   # -- Miscelanious Services --
+  # mandb
+  documentation = {
+    man = {
+      enable = true;
+      generateCaches = true; # builds the whatis/apropos cache at switch time
+      man-db.enable = true;  # or mandoc.enable = true; pick one
+    };
+    dev.enable = true;       # for section 3 etc. (optional but nice)
+  };
+
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
@@ -456,14 +455,14 @@ in
     allow br0
   '';
 
-  documentation.man = {
-    enable = true;
-    generateCaches = true;
-  };
-
   # -- Networking --
-  # Openvpn
   services.resolved.enable = true;
+  networking.networkmanager.enable = true;
+  networking.networkmanager.dns = "systemd-resolved";
+  networking.resolvconf.useLocalResolver = true;
+
+  # Openvpn (ovpn)
+  # services.resolved.fallbackDns = [ ];
 
   # Syncthing Daemon
   services.syncthing = {
@@ -474,7 +473,6 @@ in
     configDir = "/home/kmalone/.config/syncthing";
     openDefaultPorts = true;
   };
-
 
   # neovim
   programs.neovim = {
