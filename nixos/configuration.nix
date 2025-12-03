@@ -10,7 +10,7 @@ in
   [ 
     ./hardware-configuration.nix
     #./modules/nvidia.nix
-    ./modules/nvidia-legacy.nix
+    #./modules/nvidia-legacy.nix
     #./modules/intel-igpu.nix
     ./modules/music.nix
     ./modules/gaming.nix
@@ -222,7 +222,7 @@ in
     nodejs
     (python313.withPackages (ps: with ps; [
       pip mutagen numpy scipy pandas matplotlib jupyterlab ipython 
-      scikit-learn pillow requests sqlalchemy aiosqlite opencv4
+      scikit-learn pillow requests sqlalchemy aiosqlite opencv4 anthropic
     ]))
 
     # Muh low-level langauges
