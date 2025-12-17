@@ -10,7 +10,7 @@ in
   [ 
     ./hardware-configuration.nix
     #./modules/nvidia.nix
-    #./modules/nvidia-legacy.nix
+    ./modules/nvidia-legacy.nix
     #./modules/intel-igpu.nix
     ./modules/music.nix
     ./modules/gaming.nix
@@ -19,6 +19,7 @@ in
     #./modules/octoprint.nix
     ./modules/keyboard.nix
     ./modules/polkit.nix
+    ./modules/plex.nix
     (import "${home-manager}/nixos")
   ]
   ;
@@ -472,13 +473,6 @@ in
     dataDir = "/home/kmalone";
     configDir = "/home/kmalone/.config/syncthing";
     openDefaultPorts = true;
-  };
-
-  # Plex
-  services.plex = {
-    enable = true;
-    openFirewall = true;
-    user="kmalone";
   };
 
   # neovim
