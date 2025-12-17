@@ -19,6 +19,13 @@ in
       bash-language-server
       rust-analyzer
       awk-language-server
+      vscode-langservers-extracted # HTML/CSS/JSON/ESLint language servers extracted from vscode
+      tailwindcss-language-server
+
+      # Dependencies   
+      nodejs
+      typescript
+      tailwindcss
   ];
 
   programs.neovim = {

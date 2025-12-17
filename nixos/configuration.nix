@@ -474,6 +474,13 @@ in
     openDefaultPorts = true;
   };
 
+  # Plex
+  services.plex = {
+    enable = true;
+    openFirewall = true;
+    user="kmalone";
+  };
+
   # neovim
   programs.neovim = {
     enable = true;
