@@ -10,7 +10,7 @@ in
   [ 
     ./hardware-configuration.nix
     #./modules/nvidia.nix
-    ./modules/nvidia-legacy.nix
+    #./modules/nvidia-legacy.nix
     #./modules/intel-igpu.nix
     ./modules/music.nix
     ./modules/gaming.nix
@@ -460,10 +460,8 @@ in
   services.resolved.enable = true;
   networking.networkmanager.enable = true;
   networking.networkmanager.dns = "systemd-resolved";
-  networking.resolvconf.useLocalResolver = true;
 
   # Openvpn (ovpn)
-  # services.resolved.fallbackDns = [ ];
 
   # Syncthing Daemon
   services.syncthing = {
@@ -482,15 +480,6 @@ in
     viAlias = true;
     vimAlias = true;
   };
-
-  # List services that you want to enable:
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # Experimental features
   # --extra-experimental-features nix-command
