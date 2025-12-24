@@ -10,7 +10,7 @@ in
   [ 
     ./hardware-configuration.nix
     #./modules/nvidia.nix
-    #./modules/nvidia-legacy.nix
+    ./modules/nvidia-legacy.nix
     #./modules/intel-igpu.nix
     ./modules/music.nix
     ./modules/gaming.nix
@@ -447,9 +447,9 @@ in
   programs.virt-manager.enable = true;
 
   # Bridge Declaration
-  networking.bridges.br0.interfaces = [ "enp0s9" ];
-  networking.interfaces.br0.useDHCP = true;
-  networking.firewall.trustedInterfaces = [ "br0" ];
+  #networking.bridges.br0.interfaces = [ "enp0s9" ];
+  #networking.interfaces.br0.useDHCP = true;
+  #networking.firewall.trustedInterfaces = [ "br0" ];
 
   # QEMU bridge ACL
   environment.etc."qemu/bridge.conf".text = ''
