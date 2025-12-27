@@ -430,32 +430,6 @@ in
   services.upower.enable = true;
   services.udisks2.enable = true;
 
-# -- Virtualisation --
-
-  # KVM/QEMU setup
-  virtualisation = {
-    docker.enable = true; # Not needed for the rest of the qemu setup
-    libvirtd.enable = true;
-    libvirtd.qemu = {
-      package = pkgs.qemu_full;
-      ovmf.enable = true;
-      swtpm.enable = true;
-      runAsRoot = false;
-    };
-    spiceUSBRedirection.enable = true;
-  };
-  programs.virt-manager.enable = true;
-
-  # Bridge Declaration
-  #networking.bridges.br0.interfaces = [ "enp0s9" ];
-  #networking.interfaces.br0.useDHCP = true;
-  #networking.firewall.trustedInterfaces = [ "br0" ];
-
-  # QEMU bridge ACL
-  environment.etc."qemu/bridge.conf".text = ''
-    allow br0
-  '';
-
   # -- Networking --
   services.resolved.enable = true;
   networking.networkmanager.enable = true;
