@@ -10,7 +10,7 @@ in
   [ 
     ./hardware-configuration.nix
     #./modules/nvidia.nix
-    ./modules/nvidia-legacy.nix
+    #./modules/nvidia-legacy.nix
     #./modules/intel-igpu.nix
     ./modules/music.nix
     ./modules/gaming.nix
