@@ -20,6 +20,7 @@ in
     ./modules/keyboard.nix
     ./modules/polkit.nix
     ./modules/plex.nix
+    #./modules/virt-host.nix
     (import "${home-manager}/nixos")
   ]
   ;
