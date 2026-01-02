@@ -177,6 +177,7 @@ in
     freecad-wayland
     cura-appimage
     prusa-slicer
+    newsboat # Fork of Newsbeuter, an RSS/Atom feed reader for the text console
 
     # Homelabbing
     syncthing syncthingtray
@@ -215,6 +216,19 @@ in
     nwg-look
     jq
     cups # Standards-based printing system for UNIX
+    ffmpeg_7 # Complete, cross-platform solution to record, convert and stream audio and video
+    ripgrep
+    ripgrep-all
+
+    # Black arch
+    nmap
+    nmapsi4
+
+
+    # Browser modding utils
+    steam-run
+    nspr
+    nss
 
     # device utilities
     rpi-imager
