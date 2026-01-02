@@ -349,6 +349,8 @@ in
     #kdePackages.plasma-systemmonitor # provides usage statistics such as CPU%
     #kdePackages.kamoso
 
+    displaylink # drivers
+
     # Virtualization
     qemu_kvm virtio-win  # Windows virtio drivers ISO
     qemu_full
@@ -388,7 +390,9 @@ in
     enable32Bit = true;
   };
 
-  services.xserver.enable = true; # XOrg compatibility # maybe not required
+  services.xserver.enable = true; # XOrg compatibility layer
+  services.xserver.videoDrivers = [ "displaylink" "modesetting" ]; # display port output over usb-a
+
   services.libinput.enable = true; # Required with lightdm for whatever reason
 
   # Display Server -> Display Manager/Greeter -> DesktopEnv/WindowManager
@@ -468,6 +472,16 @@ in
     defaultEditor = true;
     viAlias = true;
     vimAlias = true;
+  };
+
+  boot = {
+    extraModulePackages = [ config.boot.kernelPackages.evdi ];
+    initrd = {
+      # List of modules that are always loaded by the initrd.
+      kernelModules = [
+        "evdi"
+      ];
+    };
   };
 
   # Experimental features

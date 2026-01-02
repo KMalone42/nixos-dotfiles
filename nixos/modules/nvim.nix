@@ -22,6 +22,8 @@ in
       vscode-langservers-extracted # HTML/CSS/JSON/ESLint language servers extracted from vscode
       tailwindcss-language-server
       ccls # C/c++ language server powered by clang
+      clang-tools # clangd?
+      libclang # clangd
 
       # Dependencies   
       nodejs
