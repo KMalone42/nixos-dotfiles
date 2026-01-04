@@ -178,6 +178,8 @@ in
     cura-appimage
     prusa-slicer
     newsboat # Fork of Newsbeuter, an RSS/Atom feed reader for the text console
+    sqlitebrowser # DB Browser for SQLite
+    dbeaver-bin # Universal SQL Client for developers, DBA and analysts. Supports MySQL, PostgreSQL, MariaDB, SQLite, and more
 
     # Homelabbing
     syncthing syncthingtray
