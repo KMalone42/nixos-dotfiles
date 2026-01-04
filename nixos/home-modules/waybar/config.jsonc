@@ -1,0 +1,116 @@
+// ~/.config/waybar/config
+{
+  "layer": "top",
+  "position": "top",
+  "modules-left": ["hyprland/workspaces"],
+  "modules-center": ["clock"],
+  "modules-right": ["idle_inhibitor","mpd","pulseaudio","memory","battery", "network","tray"],
+
+  "hyprland/workspaces": {
+    "format": "{icon}",
+    "on-click": "activate"
+  },
+
+  "memory": {
+    "format": "  {used}/{total} GB",
+    "tooltip": true,
+    "interval": 5,
+    "states": {
+        "warning": 75,
+        "critical": 90
+    }
+  },
+
+  "clock": {
+    "interval": 1,
+    "format": "{:%Y-%m-%d %H:%M:%S}",
+    //"tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+        "tooltip-format": "\n<span size='9pt' font='WenQuanYi Zen Hei Mono'>{calendar}</span>",
+        "calendar": {
+                    "mode"          : "year",
+                    "mode-mon-col"  : 3,
+                    "weeks-pos"     : "right",
+                    "on-scroll"     : 1,
+                    "format": {
+                              "months":     "<span color='#ffead3'><b>{}</b></span>",
+                              "days":       "<span color='#ecc6d9'><b>{}</b></span>",
+                              "weeks":      "<span color='#99ffdd'><b>W{}</b></span>",
+                              "weekdays":   "<span color='#ffcc66'><b>{}</b></span>",
+                              "today":      "<span color='#ff6699'><b><u>{}</u></b></span>"
+                              }
+                    },
+        "actions":  {
+                    "on-click-right": "mode",
+                    "on-click-forward": "tz_up",
+                    "on-click-backward": "tz_down",
+                    "on-scroll-up": "shift_up",
+                    "on-scroll-down": "shift_down"
+                    }
+  },
+
+  /* it appears that for whatever reason there's no right padding on pulse'*/
+  "pulseaudio": {
+    "format": " {volume}%  ",
+    "format-muted": " {volume}%  ",
+    "scroll-step": 5,
+    "on-click": "pavucontrol"
+  },
+
+  /* specifically want a space gap between tray icons and wifi */
+  "network": {
+    "format-wifi": "  {essid} ",
+    "format-ethernet": "󰈀  {ipaddr} ",
+    "format-disconnected": "Disconnected "
+  },
+
+  "battery": {
+    "format": "{capacity}% {icon}",
+    "format-icons": [" ", " ", " ", " ", " "]
+  },
+
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "󰅶",
+      "deactivated": "󰾫",
+    },
+    "tooltip-format-activated": "Idle Inhibitor: {status}",
+    "tooltip-format-deactivated": "Idle Inhibitor: {status}",
+    "start-activated": true,
+    "timeout": 9999 // in minutes
+  },
+
+  /* based on */
+  /* https://github.com/Alexays/Waybar/blob/master/man/waybar-mpd.5.scd*/
+  "mpd": {
+      "format": "{stateIcon} {randomIcon}{consumeIcon}{repeatIcon}{singleIcon} {artist} - {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S})",
+      /* there is an {album} that can be used but won't be for now*/
+
+      "format-paused": " {artist} - {title}",
+      /* "format-stopped": " stopped", */
+      "format-stopped": "",
+      "format-disconnected": "",
+
+      "unknown-tag": "󰟢",
+      "interval": 5,
+      "title-len": 20,
+      "consume-icons": {
+          "on": " "
+      },
+      "random-icons": {
+          "on": " "
+      },
+      "repeat-icons": {
+      "on": " "
+      }  
+  },
+  "tray": {
+    /* "icon-size": 21,*/
+    "show-passive-items": false,
+    "spacing": 8,
+    "icons": {
+      "blueman": "bluetooth",
+    }
+  },
+}
+/*  */

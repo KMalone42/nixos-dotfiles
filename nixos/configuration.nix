@@ -9,10 +9,20 @@ in
   imports =
   [ 
     ./hardware-configuration.nix
+    #./modules/nvidia.nix
+    #./modules/nvidia-legacy.nix
+    #./modules/intel-igpu.nix
+    ./modules/music.nix
+    ./modules/gaming.nix
+    ./modules/nvim.nix
+    #./modules/printers.nix
+    #./modules/octoprint.nix
+    ./modules/keyboard.nix
+    ./modules/polkit.nix
+    ./modules/plex.nix
+    #./modules/virt-host.nix
     (import "${home-manager}/nixos")
   ]
-  ++ lib.optionals (builtins.pathExists ./modules/nvidia.nix)     [ ./modules/nvidia.nix ]
-  #++ lib.optionals (builtins.pathExists ./modules/intel-igpu.nix) [ ./modules/intel-igpu.nix ]
   ;
     
   # Bootloader.
@@ -25,9 +35,6 @@ in
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
-  networking.networkmanager.enable = true;
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -67,80 +74,64 @@ in
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
   home-manager.backupFileExtension = "backup";
-
   home-manager.users.kmalone = { pkgs, ...}: {
+    imports = [./home-modules/firefox.nix];
+  
     home.packages = [ pkgs.atool pkgs.httpie ];
     home.stateVersion = "25.05";
-
     home.file = {
-      # Waybar
-      ".config/waybar/config.jsonc".source = ./waybar/config.jsonc;
-      ".config/waybar/style.css".source     = ./waybar/style.css;
-      # Hypr
-      ".config/hypr/hyprland.conf".source   = ./hypr/hyprland.conf;
-      ".config/hypr/hyprpaper.conf".source  = ./hypr/hyprpaper.conf;
-      ".config/hypr/hypridle.conf".source   = ./hypr/hypridle.conf;
-      ".config/hypr/hyprlock.conf".source   = ./hypr/hyprlock.conf;
-      # Wofi
-      ".config/wofi/config".source = ./wofi/config;
-      ".config/wofi/style.css".source = ./wofi/style.css;
+      ".config/waybar".source    = ./home-modules/waybar;
+      ".config/waybar".recursive = true;
+
+      ".config/hypr".source    = ./home-modules/hypr;
+      ".config/hypr".recursive = true;
+
+      ".config/wofi".source    = ./home-modules/wofi;
+      ".config/wofi".recursive = true;
+
+      ".config/kitty".source    = ./home-modules/kitty;
+      ".config/kitty".recursive = true;
+
+      ".config/wallpapers".source = ./home-modules/wallpapers;
+      ".config/wallpapers".recursive = true;
+
+      ".bashrc".source = ./home-modules/bashrc;
     };
+
     programs.waybar.enable = true;
     programs.tmux = {
         enable = true;
         terminal = "tmux-256color";
-        extraConfig = builtins.readFile ./tmux.conf;
-    };
-    services.mpd = {
-        enable = true;
-        musicDirectory = "/home/kmalone/Digital_Media/Music/";
-        extraConfig = ''
-            # must specify one or more outputs in order to play audio!
-            # (e.g. ALSA, PulseAudio, PipeWire), see next sections
-            audio_output {
-                type "pipewire" 
-                name "My PipeWire Output"
-            }
-        '';
-        # Optional:
-        #network.listenAddress = "any"; # if you want to allow non-localhost
-        #network.startWhenNeeded = true; # systemd feature: only start MPD service upon connection to its socket
-    };
-    programs.rmpc = {
-        enable = true;
+        extraConfig = builtins.readFile ./home-modules/tmux.conf;
     };
     gtk = {
       enable = true;
       theme = {
         name = "Gruvbox-Dark";
-        package = pkgs.gruvbox-dark-gtk;
+        package = pkgs.gruvbox-gtk-theme;
       };
       iconTheme = {
-        name = "Mint-L";
-        package = pkgs.mint-l-icons;
+        name = "Gruvbox-Material-Dark";
+        package = pkgs.gruvbox-material-gtk-theme;
       };
+      gtk3.extraConfig = {
+         gtk-im-module = "fcitx";
+      };
+      gtk4.extraConfig = {
+         gtk-im-module = "fcitx";
+      };
+    };
+    qt = {
+      enable = true;
+      platformTheme.name = "gtk3";
     };
   };
   # END Home-Manager
 
-        #  gtk = {
-        #    enable = true;
-        #    theme = {
-        #      name = "Adwaita-dark";
-        #      package = pkgs.gnome.gnome-themes-extra;
-        #    };
-    #  };
-
-        #  qt = {
-        #    enable = true;
-        #    platform = "qtct";
-        #    style = "kvantum";
-    #  };
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
   # BEGIN Packages
+
+  nixpkgs.config.allowUnfree = true; # Allow unfree packages
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -174,37 +165,47 @@ in
     # Productivity
     bitwarden-desktop # Password Manager
     chromium # Open source web browser from Google
-    firefox  # Mozilla's Firefox web browser
     gimp3    # GNU Image Manipulation Program
     inkscape # Vector graphics editor
     neovim      # Vim-fork focused on extensbility and usability
-    tree-sitter # CLI for :TSInstallFromGrammar
     rclone      # Command line program to sync files and directories to and from major cloud storage
     thunderbird # Mozilla's "Full-featured e-mail client"
     tmux        # a terminal multiplexer
     vesktop     # Unofficial Discord Client
     libreoffice-qt6-fresh # Comprehensive, professional-quality productivity suite, a variant of openoffice.org
     newsflash
+    freecad-wayland
+    cura-appimage
+    prusa-slicer
+    newsboat # Fork of Newsbeuter, an RSS/Atom feed reader for the text console
+    sqlitebrowser # DB Browser for SQLite
+    dbeaver-bin # Universal SQL Client for developers, DBA and analysts. Supports MySQL, PostgreSQL, MariaDB, SQLite, and more
 
     # Homelabbing
-    kdePackages.kdeconnect-kde
     syncthing syncthingtray
+    openvpn
+    # wrapper that exposes `update-systemd-resolved` in /run/current-system/sw/bin
+    (pkgs.writeShellScriptBin "update-systemd-resolved" ''
+      exec ${pkgs.update-systemd-resolved}/libexec/openvpn/update-systemd-resolved "$@"
+    '')
+    virt-viewer
 
     # Rice
     cava
     gotop
     fastfetch
     
-    # common utils
+    # common utilities (utils)
     wget 
     gcc
+    clang
     git
     mpv
     busybox
     scdoc
     cmake
     efibootmgr
-    tlrc
+    tlrc # tldr client written in rust
     man
     cyme # Modern cross-platform lsusb
     gnumake42 # Tool to control the generation of non-source files from sources
@@ -213,13 +214,37 @@ in
     man-pages-posix
     linux-manual
     unzip
+    bzip3
+    nwg-look
+    jq
+    cups # Standards-based printing system for UNIX
+    ffmpeg_7 # Complete, cross-platform solution to record, convert and stream audio and video
+    ripgrep
+    ripgrep-all
+
+    # Black arch
+    nmap
+    nmapsi4
+
+
+    # Browser modding utils
+    steam-run
+    nspr
+    nss
+
+    # device utilities
+    rpi-imager
+    # android-tools
 
     # Muh interpretted languages
     nodejs
     (python313.withPackages (ps: with ps; [
       pip mutagen numpy scipy pandas matplotlib jupyterlab ipython 
-      scikit-learn pillow requests sqlalchemy aiosqlite opencv4
+      scikit-learn pillow requests sqlalchemy aiosqlite opencv4 anthropic
     ]))
+
+    # Muh low-level langauges
+    cargo rustc
 
     # screenshots
     grim slurp
@@ -238,7 +263,6 @@ in
 
     # kdePackages
     kdePackages.qtsvg
-
     kdePackages.isoimagewriter
     kdePackages.kio-gdrive # KIO Worker to access Google Drive
     kdePackages.kio-fuse   # to mount remote filesystems via FUSE
@@ -256,17 +280,9 @@ in
     kdePackages.breeze-gtk
     kdePackages.breeze-icons
     bibata-cursors
-    themechanger # Theme changing utility for Linux
     libsForQt5.qtstyleplugin-kvantum kdePackages.qtstyleplugin-kvantum # SVG-based Qt5 theme engine plus a config tool and extra themes
-    mint-themes mint-l-icons mint-x-icons mint-y-icons # mint icon and themes
     nemo
-    gruvbox-dark-gtk
-    gruvbox-gtk-theme
-    gruvbox-material-gtk-theme
-    gruvbox-dark-icons-gtk
-    gruvbox-kvantum
-
-
+    kdePackages.qt6gtk2
     
     # Calculators
       # Default
@@ -275,8 +291,10 @@ in
 
     # GNOME pkgs
     gnome-decoder # QR codes
-    gtg
-    gnome-frog
+    gtg # getting things done
+    gnome-frog # Screen OCR utility
+    gnome-online-accounts-gtk
+    gnome-online-accounts # deps for gnome-online-accounts-gtk
 
     # Webcams
       #GNOME
@@ -332,10 +350,12 @@ in
     # NOT WORKING
     #kdePackages.plasma-systemmonitor # provides usage statistics such as CPU%
     #kdePackages.kamoso
-    #nwg-look # a GTK3 settings editor adapted to work in the wlroots environment
+
+    displaylink # drivers
 
     # Virtualization
     qemu_kvm virtio-win  # Windows virtio drivers ISO
+    qemu_full
     spice-gtk           # SPICE client libs
     quickemu quickgui   # zero-friction VM creation
     docker_28
@@ -360,13 +380,11 @@ in
 
   # Environment Variables
   environment = {
-    variables.EDITOR = "nvim";
-    variables.SUDO_EDITOR = "nvim";
-    variables.VISUAL = "nvim";
     variables.WLR_NO_HARDWARE_CURSORS = "1";
     sessionVariables.NIXOS_OZONE_WL = "1"; # Hint Electron apps to use wayland
-    sessionVariables.KVANTUM_THEME = "Gruvbox";
-    sessionVariables.GTK_THEME= "Mint-Y-Dark";
+    sessionVariables.DEFAULT_BROWSER = "${pkgs.firefox}/bin/firefox";
+    #variables.QT_STYLE_OVERRIDE = "kvantum";
+    #sessionVariables.GTK_THEME= "Mint-Y-Dark";
   };
 
   hardware.graphics = {
@@ -374,16 +392,10 @@ in
     enable32Bit = true;
   };
 
-  services.xserver.enable = true; # XOrg compatibility # maybe not required
-  services.libinput.enable = true; # Required with lightdm for whatever reason
-  services.xserver.videoDrivers = [ "nvidia" ];
+  services.xserver.enable = true; # XOrg compatibility layer
+  services.xserver.videoDrivers = [ "displaylink" "modesetting" ]; # display port output over usb-a
 
-  hardware.nvidia = {
-    modesetting.enable = true;
-    open = false;                         # use the proprietary driver for CUDA
-    nvidiaSettings = false;
-    powerManagement.enable = true;        # optional on laptops
-  };
+  services.libinput.enable = true; # Required with lightdm for whatever reason
 
   # Display Server -> Display Manager/Greeter -> DesktopEnv/WindowManager
 
@@ -423,27 +435,28 @@ in
   services.pipewire.wireplumber.configPackages = [];
 
   # -- Miscelanious Services --
+  # mandb
+  documentation = {
+    man = {
+      enable = true;
+      generateCaches = true; # builds the whatis/apropos cache at switch time
+      man-db.enable = true;  # or mandoc.enable = true; pick one
+    };
+    dev.enable = true;       # for section 3 etc. (optional but nice)
+  };
+
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
   services.upower.enable = true;
   services.udisks2.enable = true;
 
-  # KDE Connect daemon/service
-  programs.kdeconnect = {
-    enable = true;
-    package = pkgs.kdePackages.kdeconnect-kde;
-  };
-  hardware.uinput.enable = true; # required for phone -> mouse input may not be required
-  boot.kernelModules = [ "uinput" ];
-  networking.firewall = {
-    allowedTCPPorts = [ 1714 1764 ];
-    allowedUDPPorts = [ 1714 1764 ];
-  };
-  # Needed for input plugin (uinput access)
-  services.udev.extraRules = ''
-    KERNEL=="uinput", MODE="0660", GROUP="input", OPTIONS+="static_node=uinput"
-  '';
+  # -- Networking --
+  services.resolved.enable = true;
+  networking.networkmanager.enable = true;
+  networking.networkmanager.dns = "systemd-resolved";
+
+  # Openvpn (ovpn)
 
   # Syncthing Daemon
   services.syncthing = {
@@ -455,42 +468,23 @@ in
     openDefaultPorts = true;
   };
 
-  # KVM/QEMU setup
-  virtualisation = {
-    docker.enable = true; # Not needed for the rest of the qemu setup
-    libvirtd.enable = true;
-    libvirtd.qemu = {
-      package = pkgs.qemu_kvm;
-      ovmf.enable = true;
-      swtpm.enable = true;
-      runAsRoot = false;
+  # neovim
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+    viAlias = true;
+    vimAlias = true;
+  };
+
+  boot = {
+    extraModulePackages = [ config.boot.kernelPackages.evdi ];
+    initrd = {
+      # List of modules that are always loaded by the initrd.
+      kernelModules = [
+        "evdi"
+      ];
     };
-    spiceUSBRedirection.enable = true;
   };
-  programs.virt-manager.enable = true;
-
-  # Steam
-  programs.gamemode.enable = true;
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true; # Required for Steam Remote Play
-    dedicatedServer.openFirewall = true; # Required for Source Dedicated Server
-    localNetworkGameTransfers.openFirewall = true; # Required for Steam Local Network Transfers
-  };
-
-  documentation.man = {
-    enable = true;
-    generateCaches = true;
-  };
-
-  # List services that you want to enable:
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # Experimental features
   # --extra-experimental-features nix-command

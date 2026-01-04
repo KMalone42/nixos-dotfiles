@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+# Usage:$ ./sync_nix.sh <targeted/tree/nixos/>
+# Takes targeted nix tree and syncs it to your /etc/nixos/ 
+# ensures owner and permissions are correct
+NIXPKGS="/nix/var/nix/profiles/per-user/root/channels/nixos"
+NIXOS_DIR="/etc/nixos"
+
+SOURCE="${1:-}"
+
+if [ -z "$SOURCE" ]; then
+    echo "Usage: $0 <destination_directory>"
+    exit 1
+fi
+
+# Ensure trailing slash on SOURCE
+case "$SOURCE" in
+    */) ;;
+    *) SOURCE="${SOURCE}/" ;;
+esac
+
+sudo cp /etc/nixos/hardware-configuration.nix "$SOURCE"
+if [ -f /etc/nixos/configuration.nix.save ]; then
+    sudo cp /etc/nixos/configuration.nix.save "$SOURCE"
+else
+    echo "Warning: /etc/nixos/configuration.nix.save not found, creating backup."
+    sudo cp /etc/nixos/configuration.nix /etc/nixos/configuration.nix.save
+fi
+
+sudo rsync -a --delete \
+    --exclude 'hardware-configuration' \
+    --exclude 'configuration.nix.save' \
+    "$SOURCE" "$NIXOS_DIR"/
+sudo chown root:root -R "$NIXOS_DIR"

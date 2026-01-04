@@ -1,0 +1,33 @@
+window {
+  margin: 0;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.8); /* 80% opaque white */
+}
+
+#outer-box, #inner-box, #scroll, #input, #text {
+  background-color: transparent;
+  color: #111; /* dark text for light theme */
+}
+
+#input {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  color: #111;
+}
+
+#entry {
+  padding: 8px 12px;
+  margin: 2px 0;
+  background-color: transparent;
+}
+
+#entry:selected {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+#scroll {
+  padding: 8px;
+}

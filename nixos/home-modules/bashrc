@@ -1,0 +1,140 @@
+# ~/.bashrc
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+alias ls='ls --color=auto'
+alias grep='grep --color=auto'
+PS1="\[\e[1;32m\]\u@\h\[\e[0m\] \[\e[1;34m\]\W\[\e[0m\] \$ "
+
+# case-agnostic tab complete
+bind "set completion-ignore-case on"
+bind "set completion-map-case on"
+bind "set show-all-if-ambiguous on"
+
+# environment variables
+export PATH="$HOME/.local/bin/:$PATH"
+export SUDO_EDITOR="nvim"
+export EDITOR="nvim"
+export MANPATH="/run/nixos/sw/share/man"
+export NIXPKGS_ALLOW_UNFREE=1 # Allow unfree packages to be temporarily run with nix-shell -p 'foo'
+
+## Aliases
+# Nix
+# There is a backup script in ~/.local/bin/backup-nix
+alias rbnix='sudo nixos-rebuild switch'
+alias rbhome='home-manager switch'
+
+# Shortcuts
+alias tls='tmux ls'
+alias sudoconfig='sudoedit /etc/nixos/configuration.nix'
+
+# Syntax
+alias view='kitty +kitten icat'
+alias nvimdiff='nvim -d'
+alias vinegar='flatpak run org.vinegarhq.Vinegar'
+alias rebuild='sudo nixos-rebuild switch'
+alias lsusb='cyme'
+alias diff='diff --color=always'
+
+[[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
+
+# Shortcuts
+
+# 'at' short for 'attach tmux'
+# usage 'at 0' -> attaches tmux to instance 0
+function at (){
+    tmux a -t "$1"
+}
+
+# usage 'ovpn Mullvad' -> launches random mullvad ovpn config
+function ovpn () {
+    cd ~/OpenVpn/config/"$1"
+    mapfile -t target_array < <(ls|grep -E '.*\.(conf|ovpn)$')
+    target="${target_array[RANDOM % ${#target_array[@]}]}"
+    sudo openvpn --config "$target"
+}
+
+function reset-display () {
+    sudo systemctl restart displaylink.service
+    sudo systemctl restart display-manager
+}
+
+# usage 'git-set-upstream <branch>'
+function git-set-upstream () {
+    local branch="$1"
+
+    if [ -z "$branch" ]; then
+        echo "Usage: git-set-upstream <branch>"
+        return 1
+    fi
+
+    # --- check local branch ---
+    if git show-ref --verify --quiet "refs/heads/$branch"; then
+        echo "Local branch exists: $branch"
+    else
+        echo "Creating local branch: $branch"
+        git checkout -b "$branch" || return 1
+    fi
+
+    # --- check remote branch ---
+    if git ls-remote --exit-code --heads origin "$branch" &>/dev/null; then
+        echo "Setting upstream to origin/$branch"
+        git branch -u "origin/$branch" "$branch"
+    else
+        echo "Remote branch does not exist: origin/$branch"
+        echo "Not setting upstream."
+    fi
+}
+
+# usage git-get-subdir <https://github.com/rafamadriz/friendly-snippets/tree/main/snippets/python>
+function git-get-subdir () {
+
+    local url="$1"
+    local api_url=""
+
+    if [[ "$url" =~ api.github.com/repos/.*/contents/ ]]; then
+        api_url="$url"
+    else
+        local stripped="${url#https://github.com/}"
+        stripped="${stripped#http://github.com/}"
+
+        # Split into components
+        # stripped = user/repo/tree/branch/path/to/subdir
+        local user repo tree branch path
+
+        user=$(echo "$stripped" | cut -d/ -f1)
+        repo=$(echo "$stripped" | cut -d/ -f2)
+        tree=$(echo "$stripped" | cut -d/ -f3)     # should be "tree"
+        branch=$(echo "$stripped" | cut -d/ -f4)
+        path=$(echo "$stripped" | cut -d/ -f5-)
+
+        if [[ "$tree" != "tree" ]]; then
+            echo "ERROR: URL does not contain /tree/: $url"
+            return 1
+        fi
+
+        api_url="https://api.github.com/repos/$user/$repo/contents/$path?ref=$branch"
+    fi
+
+    echo "API URL: $api_url"
+    echo
+
+    curl -s "$api_url" \
+    | jq -r '.[] | select(.type=="file") | .download_url' \
+    | while read -r url; do
+        echo "Downloading $(basename "$url")"
+        curl -sL "$url" -o "$(basename "$url")"
+      done
+}
+
+function git-fetch-all () {
+    # Crawl all directories containing a .git folder and run git fetch
+    find . -name ".git" -type d | while read -r repo; do
+        dir="$(dirname "$repo")"
+        echo "🔄 Fetching in $dir"
+        git -C "$dir" fetch --all --prune
+    done
+
+    echo "Done."
+}
