@@ -24,6 +24,8 @@ in
       ccls # C/c++ language server powered by clang
       clang-tools # clangd?
       libclang # clangd
+      perlnavigator # perl
+      sqls # msql and sqlite
 
       # Dependencies   
       nodejs
