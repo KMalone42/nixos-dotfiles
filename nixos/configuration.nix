@@ -174,7 +174,6 @@ in
     vesktop     # Unofficial Discord Client
     libreoffice-qt6-fresh # Comprehensive, professional-quality productivity suite, a variant of openoffice.org
     newsflash
-    freecad-wayland
     cura-appimage
     prusa-slicer
     newsboat # Fork of Newsbeuter, an RSS/Atom feed reader for the text console
@@ -227,7 +226,6 @@ in
 
     # Black arch
     nmap
-    nmapsi4
 
 
     # Browser modding utils
