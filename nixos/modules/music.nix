@@ -26,5 +26,5 @@ in
 	};
 
 	environment.systemPackages = 
-		(with pkgs; [mpc-cli rmpc]);
+		(with pkgs; [mpc rmpc]);
 }

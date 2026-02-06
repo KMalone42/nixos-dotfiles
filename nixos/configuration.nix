@@ -3,14 +3,14 @@
 { config, pkgs, lib, ... }:
 
 let
-  home-manager = builtins.fetchTarball https://github.com/nix-community/home-manager/archive/release-25.05.tar.gz;
+  home-manager = builtins.fetchTarball https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz;
 in
 {
   imports =
   [ 
     ./hardware-configuration.nix
     #./modules/nvidia.nix
-    #./modules/nvidia-legacy.nix
+    ./modules/nvidia-legacy.nix
     #./modules/intel-igpu.nix
     ./modules/music.nix
     ./modules/gaming.nix
@@ -19,7 +19,7 @@ in
     #./modules/octoprint.nix
     ./modules/keyboard.nix
     ./modules/polkit.nix
-    ./modules/plex.nix
+    #./modules/plex.nix
     #./modules/virt-host.nix
     (import "${home-manager}/nixos")
   ]
@@ -174,12 +174,12 @@ in
     vesktop     # Unofficial Discord Client
     libreoffice-qt6-fresh # Comprehensive, professional-quality productivity suite, a variant of openoffice.org
     newsflash
-    freecad-wayland
     cura-appimage
     prusa-slicer
     newsboat # Fork of Newsbeuter, an RSS/Atom feed reader for the text console
     sqlitebrowser # DB Browser for SQLite
     dbeaver-bin # Universal SQL Client for developers, DBA and analysts. Supports MySQL, PostgreSQL, MariaDB, SQLite, and more
+    aider-chat # A basically universal ollama claude-code like client
 
     # Homelabbing
     syncthing syncthingtray
@@ -221,10 +221,12 @@ in
     ffmpeg_7 # Complete, cross-platform solution to record, convert and stream audio and video
     ripgrep
     ripgrep-all
+    stdenv.cc.cc
+    zlib
+    glibc
 
     # Black arch
     nmap
-    nmapsi4
 
 
     # Browser modding utils
@@ -238,9 +240,13 @@ in
 
     # Muh interpretted languages
     nodejs
+    electron_40
     (python313.withPackages (ps: with ps; [
-      pip mutagen numpy scipy pandas matplotlib jupyterlab ipython 
-      scikit-learn pillow requests sqlalchemy aiosqlite opencv4 anthropic
+      pip mutagen scipy pandas jupyterlab ipython 
+      scikit-learn pillow sqlalchemy aiosqlite opencv4 anthropic
+      matplotlib numpy plotly
+      requests
+      backtesting
     ]))
 
     # Muh low-level langauges
@@ -351,7 +357,7 @@ in
     #kdePackages.plasma-systemmonitor # provides usage statistics such as CPU%
     #kdePackages.kamoso
 
-    displaylink # drivers
+    # displaylink # drivers
 
     # Virtualization
     qemu_kvm virtio-win  # Windows virtio drivers ISO
@@ -367,7 +373,7 @@ in
     nerd-fonts.meslo-lg
     nerd-fonts.symbols-only
     noto-fonts-cjk-sans
-    noto-fonts-emoji
+    noto-fonts-color-emoji
     liberation_ttf
     fira-code
     fira-code-symbols
@@ -393,7 +399,7 @@ in
   };
 
   services.xserver.enable = true; # XOrg compatibility layer
-  services.xserver.videoDrivers = [ "displaylink" "modesetting" ]; # display port output over usb-a
+  #services.xserver.videoDrivers = [ "displaylink" "modesetting" ]; # display port output over usb-a
 
   services.libinput.enable = true; # Required with lightdm for whatever reason
 
@@ -405,7 +411,8 @@ in
   };
 
   programs.hyprland.enable = true;
-  services.dbus.enable = true; # Enable screen sharing
+  services.dbus.enable = true;
+  services.udev.enable = true;
   xdg.portal = {
     enable = true;
     xdgOpenUsePortal = true;
@@ -445,8 +452,16 @@ in
     dev.enable = true;       # for section 3 etc. (optional but nice)
   };
 
-  hardware.bluetooth.enable = true;
   services.blueman.enable = true;
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+
+    settings = {
+      General.Experimental = true;
+      General.Enable = "Source,Sink,Media,Socket,HID";
+    };
+  };
 
   services.upower.enable = true;
   services.udisks2.enable = true;
