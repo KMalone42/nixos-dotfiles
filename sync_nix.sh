@@ -9,7 +9,7 @@ NIXOS_DIR="/etc/nixos"
 SOURCE="${1:-}"
 
 if [ -z "$SOURCE" ]; then
-    echo "Usage: $0 <destination_directory>"
+    echo "Usage: $0 <source_directory>"
     exit 1
 fi
 

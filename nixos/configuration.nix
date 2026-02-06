@@ -10,7 +10,7 @@ in
   [ 
     ./hardware-configuration.nix
     #./modules/nvidia.nix
-    #./modules/nvidia-legacy.nix
+    ./modules/nvidia-legacy.nix
     #./modules/intel-igpu.nix
     ./modules/music.nix
     ./modules/gaming.nix
@@ -19,7 +19,7 @@ in
     #./modules/octoprint.nix
     ./modules/keyboard.nix
     ./modules/polkit.nix
-    ./modules/plex.nix
+    #./modules/plex.nix
     #./modules/virt-host.nix
     (import "${home-manager}/nixos")
   ]
@@ -179,6 +179,7 @@ in
     newsboat # Fork of Newsbeuter, an RSS/Atom feed reader for the text console
     sqlitebrowser # DB Browser for SQLite
     dbeaver-bin # Universal SQL Client for developers, DBA and analysts. Supports MySQL, PostgreSQL, MariaDB, SQLite, and more
+    aider-chat # A basically universal ollama claude-code like client
 
     # Homelabbing
     syncthing syncthingtray
@@ -239,6 +240,7 @@ in
 
     # Muh interpretted languages
     nodejs
+    electron_40
     (python313.withPackages (ps: with ps; [
       pip mutagen scipy pandas jupyterlab ipython 
       scikit-learn pillow sqlalchemy aiosqlite opencv4 anthropic
