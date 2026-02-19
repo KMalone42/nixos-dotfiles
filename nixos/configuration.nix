@@ -10,10 +10,10 @@ in
   [ 
     ./hardware-configuration.nix
     #./modules/nvidia.nix
-    ./modules/nvidia-legacy.nix
+    #./modules/nvidia-legacy.nix
     #./modules/intel-igpu.nix
     ./modules/music.nix
-    ./modules/gaming.nix
+    #./modules/gaming.nix
     ./modules/nvim.nix
     #./modules/printers.nix
     #./modules/octoprint.nix
@@ -21,6 +21,7 @@ in
     ./modules/polkit.nix
     #./modules/plex.nix
     #./modules/virt-host.nix
+    ./modules/openvpn-client.nix
     (import "${home-manager}/nixos")
   ]
   ;
@@ -241,13 +242,15 @@ in
     # Muh interpretted languages
     nodejs
     electron_40
-    (python313.withPackages (ps: with ps; [
-      pip mutagen scipy pandas jupyterlab ipython 
-      scikit-learn pillow sqlalchemy aiosqlite opencv4 anthropic
-      matplotlib numpy plotly
-      requests
-      backtesting
-    ]))
+    python315
+    pipx
+    #(python313.withPackages (ps: with ps; [
+    #  pip mutagen scipy pandas jupyterlab ipython 
+    #  scikit-learn pillow sqlalchemy aiosqlite opencv4 anthropic
+    #  matplotlib numpy plotly
+    #  requests
+    #  backtesting
+    #]))
 
     # Muh low-level langauges
     cargo rustc
