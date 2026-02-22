@@ -243,8 +243,11 @@ in
     # Muh interpretted languages
     nodejs
     electron_40
-    python315
+    #python315
     pipx
+    (python313.withPackages (ps: with ps; [
+      pip
+    ]))
     #(python313.withPackages (ps: with ps; [
     #  pip mutagen scipy pandas jupyterlab ipython 
     #  scikit-learn pillow sqlalchemy aiosqlite opencv4 anthropic
