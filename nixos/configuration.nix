@@ -21,7 +21,8 @@ in
     ./modules/polkit.nix
     #./modules/plex.nix
     #./modules/virt-host.nix
-    ./modules/openvpn-client.nix
+    # ./modules/openvpn-client.nix
+    ./modules/wireguard-client.nix
     (import "${home-manager}/nixos")
   ]
   ;

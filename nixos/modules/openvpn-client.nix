@@ -1,5 +1,6 @@
 # Helpful commands
 # systemctl start openvpn-Home.service
+# systemctl list-unit-files | grep -i openvpn
 
 { lib, config, pkgs, ... }:
 
@@ -11,7 +12,14 @@
   ];
 
   services.openvpn.servers = {
-    Home = { config = '' config /home/kmalone/OpenVpn/config/Home/client.ovpn ''; };
+    Home = { 
+      config = '' config /home/kmalone/OpenVpn/config/Home/client.ovpn '';
+      updateResolvConf = true;
+    };
+    MullvadUS = {
+      config = '' config /home/kmalone/OpenVpn/config/Mullvad/mullvad_us_all.conf '';
+      updateResolvConf = true;
+    };
   };
 
   # For enabling on startup.
@@ -22,4 +30,3 @@
   #    };
   #  };
 }
-
