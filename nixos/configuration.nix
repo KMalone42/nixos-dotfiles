@@ -226,6 +226,7 @@ in
     stdenv.cc.cc
     zlib
     glibc
+    flatpak # Linux application sandboxing and distribution framework
 
     # Black arch
     nmap
