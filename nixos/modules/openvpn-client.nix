@@ -15,10 +15,17 @@
     Home = { 
       config = '' config /home/kmalone/OpenVpn/config/Home/client.ovpn '';
       updateResolvConf = true;
+      enable = false;
     };
     MullvadUS = {
       config = '' config /home/kmalone/OpenVpn/config/Mullvad/mullvad_us_all.conf '';
       updateResolvConf = true;
+      enable = false;
+    };
+    Office = {
+      config = '' /home/kmalone/OpenVpn/config/Granada/ms1-fw-a-UDP4-1195-kmalone-config.ovpn '';
+      updateResolvConf = true;
+      enable = false;
     };
   };
 
