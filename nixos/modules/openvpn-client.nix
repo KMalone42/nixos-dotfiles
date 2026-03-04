@@ -15,25 +15,17 @@
     Home = { 
       config = '' config /home/kmalone/OpenVpn/config/Home/client.ovpn '';
       updateResolvConf = true;
-      enable = false;
+      autoStart = false;
     };
     MullvadUS = {
       config = '' config /home/kmalone/OpenVpn/config/Mullvad/mullvad_us_all.conf '';
       updateResolvConf = true;
-      enable = false;
+      autoStart = false;
     };
     Office = {
-      config = '' /home/kmalone/OpenVpn/config/Granada/ms1-fw-a-UDP4-1195-kmalone-config.ovpn '';
+      config = '' config /home/kmalone/OpenVpn/config/Granada/ms1-fw-a-UDP4-1195-kmalone-config.ovpn '';
       updateResolvConf = true;
-      enable = false;
+      autoStart = false;
     };
   };
-
-  # For enabling on startup.
-  #  services.openvpn.servers = {
-  #    officeVPN  = {
-  #      config = '' config /root/nixos/openvpn/officeVPN.conf '';
-  #      updateResolvConf = true;
-  #    };
-  #  };
 }
