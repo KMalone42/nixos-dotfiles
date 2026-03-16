@@ -18,6 +18,7 @@ export SUDO_EDITOR="nvim"
 export EDITOR="nvim"
 export MANPATH="/run/nixos/sw/share/man"
 export NIXPKGS_ALLOW_UNFREE=1 # Allow unfree packages to be temporarily run with nix-shell -p 'foo'
+export OLLAMA_API_BASE=http://saruman:11434
 
 ## Aliases
 # Nix

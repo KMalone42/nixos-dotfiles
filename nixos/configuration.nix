@@ -10,7 +10,7 @@ in
   [ 
     ./hardware-configuration.nix
     #./modules/nvidia.nix
-    #./modules/nvidia-legacy.nix
+    ./modules/nvidia-legacy.nix
     #./modules/intel-igpu.nix
     ./modules/music.nix
     #./modules/gaming.nix
@@ -133,6 +133,7 @@ in
   # BEGIN Packages
 
   nixpkgs.config.allowUnfree = true; # Allow unfree packages
+  nixpkgs.config.android_sdk.accept_license = true; # Allow android-studio-full
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -182,6 +183,7 @@ in
     sqlitebrowser # DB Browser for SQLite
     dbeaver-bin # Universal SQL Client for developers, DBA and analysts. Supports MySQL, PostgreSQL, MariaDB, SQLite, and more
     aider-chat # A basically universal ollama claude-code like client
+    # android-studio-full # Official IDE for Android (stable channel)
 
     # Homelabbing
     syncthing syncthingtray
