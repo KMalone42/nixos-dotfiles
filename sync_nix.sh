@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Usage: $0 <targeted/tree/nixos/> [dry-run]
+# Usage: $0 <source/nixos/> [dry-run]
 # Takes targeted nix tree and syncs it to your /etc/nixos/
 # ensures owner and permissions are correct
 
