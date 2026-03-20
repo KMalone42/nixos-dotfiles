@@ -77,6 +77,11 @@ in
   home-manager.useUserPackages = true;
   home-manager.backupFileExtension = "backup";
   home-manager.users.kmalone = { pkgs, ...}: {
+    dconf.settings = {
+      "org/gnome/desktop/interface" = {
+        color-scheme = "prefer-dark";
+      };
+    };
     imports = [./home-modules/firefox.nix];
   
     home.packages = [ pkgs.atool pkgs.httpie ];
@@ -125,7 +130,7 @@ in
     };
     qt = {
       enable = true;
-      platformTheme.name = "gtk3";
+      platformTheme = "gnome";
     };
   };
   # END Home-Manager
@@ -183,6 +188,7 @@ in
     sqlitebrowser # DB Browser for SQLite
     dbeaver-bin # Universal SQL Client for developers, DBA and analysts. Supports MySQL, PostgreSQL, MariaDB, SQLite, and more
     aider-chat # A basically universal ollama claude-code like client
+    opencode # AI coding agent built for the terminal
     # android-studio-full # Official IDE for Android (stable channel)
 
     # Homelabbing
