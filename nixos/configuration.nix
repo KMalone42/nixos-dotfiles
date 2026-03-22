@@ -130,7 +130,7 @@ in
     };
     qt = {
       enable = true;
-      platformTheme = "gnome";
+      # platformTheme = "gnome";
     };
   };
   # END Home-Manager
@@ -201,9 +201,13 @@ in
     virt-viewer
 
     # Rice
+    kdePackages.qt6ct
     cava
     gotop
     fastfetch
+    #libsForQt5.qt5ct
+    #kdePackages.qt6ct
+    #adwaita-qt
     
     # common utilities (utils)
     wget 
