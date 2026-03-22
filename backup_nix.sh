@@ -3,6 +3,7 @@ set -euo pipefail
 
 # Usage:$ ./backup_nvim.sh <destination>
 # Check that an argument was provided
+
 if [ -z "$1" ]; then
     echo "Usage: $0 <destination_directory>"
     exit 1
