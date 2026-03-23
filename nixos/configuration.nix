@@ -7,10 +7,10 @@ let
 in
 {
   imports =
-  [ 
+  [
     ./hardware-configuration.nix
     #./modules/nvidia.nix
-    ./modules/nvidia-legacy.nix
+    #./modules/nvidia-legacy.nix
     #./modules/intel-igpu.nix
     ./modules/music.nix
     #./modules/gaming.nix
@@ -24,19 +24,13 @@ in
     ./modules/openvpn-client.nix
     ./modules/wireguard-client.nix
     (import "${home-manager}/nixos")
-  ]
-  ;
+  ];
     
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -63,8 +57,6 @@ in
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  # KdeConnect Groups = uinput, input
-  # input also associated with qemu/kvm 
   users.users.kmalone = {
     isNormalUser = true;
     description = "kmalone";
@@ -76,22 +68,17 @@ in
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
   home-manager.backupFileExtension = "backup";
-  home-manager.users.kmalone = { pkgs, ...}: {
-    dconf.settings = {
-      "org/gnome/desktop/interface" = {
-        color-scheme = "prefer-dark";
-      };
-    };
+  home-manager.users.kmalone = { pkgs, ... }: {
+    # No GNOME settings for Sway
     imports = [./home-modules/firefox.nix];
-  
     home.packages = [ pkgs.atool pkgs.httpie ];
     home.stateVersion = "25.05";
     home.file = {
+      ".config/sway".source    = ./home-modules/sway;
+      ".config/sway".recursive = true;
+
       ".config/waybar".source    = ./home-modules/waybar;
       ".config/waybar".recursive = true;
-
-      ".config/hypr".source    = ./home-modules/hypr;
-      ".config/hypr".recursive = true;
 
       ".config/wofi".source    = ./home-modules/wofi;
       ".config/wofi".recursive = true;
@@ -130,45 +117,37 @@ in
     };
     qt = {
       enable = true;
-      # platformTheme = "gnome";
     };
   };
   # END Home-Manager
 
   # BEGIN Packages
 
-  nixpkgs.config.allowUnfree = true; # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
   nixpkgs.config.android_sdk.accept_license = true; # Allow android-studio-full
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
 
-    # Hyprland dependencies
-    swww # for wallpapers may not actually be a dependency/needed
+    # Sway dependencies
     xdg-desktop-portal-gtk
-    xdg-desktop-portal-hyprland
-    xwayland # compatibility layer for X.Org within Wayland
+    xdg-desktop-portal-wlr
+    xwayland
+    xwayland-support
     brightnessctl
-    meson
-    wayland-protocols
-    wayland-utils
     wl-clipboard
-    wlroots
     wofi # dmenu replacement for wayland environments
     dunst # notification daemon
     kitty # terminal emulator
-    #cage # Dependency for Wayland based greetd setups
-    #greetd.regreet # a greeter
+    #greetd # optional greeter for X11
 
-    # Hyprland / Hypr-ecosystem
-    hyprland 
-    hyprpaper  # wallpaper
-    hyprshade  # night mode
-    hyprpicker # color select
-    hypridle   # idle behavior -> hyprlock
-    hyprlock   # screen locker
-    hyprcursor # edit cursor
+    # Sway / Sway-ecosystem
+    sway
+    swaybg  # wallpaper
+    swaylock # screen locker
+    swayidle # idle behavior -> swaylock
+    swaycursor
 
     # Productivity
     bitwarden-desktop # Password Manager
@@ -180,24 +159,19 @@ in
     thunderbird # Mozilla's "Full-featured e-mail client"
     tmux        # a terminal multiplexer
     vesktop     # Unofficial Discord Client
-    libreoffice-qt6-fresh # Comprehensive, professional-quality productivity suite, a variant of openoffice.org
+    libreoffice-qt6-fresh # Comprehensive, professional-quality productivity suite
     newsflash
     cura-appimage
     prusa-slicer
     newsboat # Fork of Newsbeuter, an RSS/Atom feed reader for the text console
     sqlitebrowser # DB Browser for SQLite
-    dbeaver-bin # Universal SQL Client for developers, DBA and analysts. Supports MySQL, PostgreSQL, MariaDB, SQLite, and more
+    dbeaver-bin # Universal SQL Client for developers
     aider-chat # A basically universal ollama claude-code like client
     opencode # AI coding agent built for the terminal
     # android-studio-full # Official IDE for Android (stable channel)
-
     # Homelabbing
     syncthing syncthingtray
     openvpn
-    # wrapper that exposes `update-systemd-resolved` in /run/current-system/sw/bin
-    (pkgs.writeShellScriptBin "update-systemd-resolved" ''
-      exec ${pkgs.update-systemd-resolved}/libexec/openvpn/update-systemd-resolved "$@"
-    '')
     virt-viewer
 
     # Rice
@@ -205,10 +179,7 @@ in
     cava
     gotop
     fastfetch
-    #libsForQt5.qt5ct
-    #kdePackages.qt6ct
-    #adwaita-qt
-    
+
     # common utilities (utils)
     wget 
     gcc
@@ -244,7 +215,6 @@ in
     # Black arch
     nmap
 
-
     # Browser modding utils
     steam-run
     nspr
@@ -262,13 +232,6 @@ in
     (python313.withPackages (ps: with ps; [
       pip
     ]))
-    #(python313.withPackages (ps: with ps; [
-    #  pip mutagen scipy pandas jupyterlab ipython 
-    #  scikit-learn pillow sqlalchemy aiosqlite opencv4 anthropic
-    #  matplotlib numpy plotly
-    #  requests
-    #  backtesting
-    #]))
 
     # Muh low-level langauges
     cargo rustc
@@ -278,9 +241,8 @@ in
 
     ### Sound
     sof-firmware
-    ## Control
     pavucontrol # maybe works better than pwvucontrol
-    pwvucontrol # modern volume controller like pavucontrol 
+    pwvucontrol # modern volume controller like pavucontrol
     wireplumber # pipewire session manager
     easyeffects # pipewire audio effects, channel mixer
     alsa-utils  # troubleshooting, adds alsamixer
@@ -295,74 +257,54 @@ in
     kdePackages.kio-fuse   # to mount remote filesystems via FUSE
     kdePackages.kio-extras # extra protocols support (sftp, fish and more)
     kdePackages.gwenview   # video and image viewer
-    kdePackages.kdenlive   # Free and open source video editor, based on MLT Framework and KDE Frameworks
-    # things for me to figure out later
-    # kdePackages.parititonmanager
-    # powerdevil
-    # fontviewer
-    # filelight
-    # kate or kwrite 
+    kdePackages.kdenlive   # Free and open source video editor
+
     # Themes
     kdePackages.breeze
     kdePackages.breeze-gtk
     kdePackages.breeze-icons
     bibata-cursors
     libsForQt5.qtstyleplugin-kvantum kdePackages.qtstyleplugin-kvantum # SVG-based Qt5 theme engine plus a config tool and extra themes
-    nemo
+
+    # nemo # file manager
     kdePackages.qt6gtk2
-    
+
     # Calculators
-      # Default
-      gnome-calculator  # Calculator for GNOME
-      #kdePackages.kalk # Calculator for KDE
+    gnome-calculator  # Calculator for GNOME
 
     # GNOME pkgs
     gnome-decoder # QR codes
     gtg # getting things done
     gnome-frog # Screen OCR utility
-    gnome-online-accounts-gtk
     gnome-online-accounts # deps for gnome-online-accounts-gtk
+    gnome-online-accounts-gtk
 
     # Webcams
-      #GNOME
-      cheese
-      #KDE
-      webcamoid
-      kdePackages.kamera
+    cheese
+    kdePackages.kamera
 
     # Clocks
-      #GNOME
-      gnome-clocks
-      gnome-solanum
-      gnome-pomodoro
-      #KDE
-      kdePackages.kclock # Clock
-      kronometer
-      ktimetracker
-      kdePackages.ktimer
-    # To compare
-    # gnome-clocks vs kclock
-    # gnome-solanum vs gnome-pomodoro
-    # kronometer vs idk
-    # 
+    gnome-clocks
+    gnome-solanum
+    gnome-pomodoro
+    kdePackages.kclock # Clock
+    kronometer
+    ktimetracker
+    kdePackages.ktimer
 
     # Development
-      #GNOME
-      gitg # GNOME GUI client to view git repositories
-      # nix currently missing kommit sadge. 
-
+    gitg # GNOME GUI client to view git repositories
 
     # Pdfs and OCR
-      #GNOME
-      ocrfeeder          # an OCR GUI for GNOME (uses tesceract)
-      evince             # a pdf reader for GNOME
-      #KDE
-      kdePackages.okular # a pdf reader for KDE
-      karp # pdf arranger for KDE
+    ocrfeeder          # an OCR GUI for GNOME (uses tesceract)
+    evince             # a pdf reader for GNOME
+    kdePackages.okular # a pdf reader for KDE
+    karp # pdf arranger for KDE
 
     # Gaming
     vulkan-tools
-    prismlauncher
+    # Gaming
+    prismlauncher # Minecraft
 
     # Recording
     obs-studio
@@ -370,15 +312,10 @@ in
     # AI
     ollama-cuda # Run large language models locally, using CUDA for NVIDIA GPU acceleration
     kdePackages.alpaka # Kirigami client for Ollama
+
     # File Manager
     nautilus
     kdePackages.dolphin # file manager GUI using qt
-
-    # NOT WORKING
-    #kdePackages.plasma-systemmonitor # provides usage statistics such as CPU%
-    #kdePackages.kamoso
-
-    # displaylink # drivers
 
     # Virtualization
     qemu_kvm virtio-win  # Windows virtio drivers ISO
@@ -386,6 +323,19 @@ in
     spice-gtk           # SPICE client libs
     quickemu quickgui   # zero-friction VM creation
     docker_28
+
+    # OpenClaw specific
+    chromium
+    chromium-chromedriver
+    python313.withPackages (ps: with ps; [
+      selenium
+      playwright-python
+      beautifulsoup4
+    ]);
+
+    # Sway-specific tools
+    slurp # Sway window selection tool
+    rofi-wayland; # Fallback if needed
   ];
   # END Packages
 
@@ -409,37 +359,30 @@ in
   environment = {
     variables.WLR_NO_HARDWARE_CURSORS = "1";
     sessionVariables.NIXOS_OZONE_WL = "1"; # Hint Electron apps to use wayland
+    sessionVariables.XDG_CURRENT_DESKTOP = "Sway";
+    sessionVariables.XDG_SESSION_TYPE = "x11";
     sessionVariables.DEFAULT_BROWSER = "${pkgs.firefox}/bin/firefox";
-    #variables.QT_STYLE_OVERRIDE = "kvantum";
-    #sessionVariables.GTK_THEME= "Mint-Y-Dark";
+    variables.OPENCLAW_HOME = "${home.home}/.openclaw";
+    variables.OPENCLAW_GATEWAY_URL = "http://127.0.0.1:18792";
   };
 
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
+  # No display manager - Sway runs directly
+  services.displayManager.enable = false;
+  services.displayManager.defaultSession = "none+sway";
 
-  services.xserver.enable = true; # XOrg compatibility layer
-  #services.xserver.videoDrivers = [ "displaylink" "modesetting" ]; # display port output over usb-a
+  services.xserver.enable = false; # Not using X11 directly, but xwayland for compatibility
 
-  services.libinput.enable = true; # Required with lightdm for whatever reason
+  services.libinput.enable = true;
 
-  # Display Server -> Display Manager/Greeter -> DesktopEnv/WindowManager
-
-  services.displayManager.sddm = {
-      enable = true;
-      theme = "breeze";
-  };
-
-  programs.hyprland.enable = true;
   services.dbus.enable = true;
   services.udev.enable = true;
+
   xdg.portal = {
     enable = true;
     xdgOpenUsePortal = true;
-    wlr.enable = true; # need this for kdeconnect maybe
+    wlr.enable = true;
     extraPortals = [
-      pkgs.xdg-desktop-portal-hyprland
+      pkgs.xdg-desktop-portal-wlr
       pkgs.xdg-desktop-portal-gtk
     ];
   };
@@ -451,19 +394,10 @@ in
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    #jack.enable = true;
-      #extraConfig = {
-      #  pipewire."99-silent-bell.conf" = {
-      #    "context.properties" = {
-      #      "module.x11.bell" = false;
-      #    };
-      #  };
-      #};
   };
   services.pipewire.wireplumber.configPackages = [];
 
-  # -- Miscelanious Services --
-  # mandb
+  # -- Miscellaneous Services --
   documentation = {
     man = {
       enable = true;
