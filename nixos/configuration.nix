@@ -24,24 +24,19 @@ in
     ./modules/openvpn-client.nix
     ./modules/wireguard-client.nix
     (import "${home-manager}/nixos")
-  ]
-  ;
-    
-  # Bootloader.
+  ];
+
+  # Bootloader
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Set your time zone.
+  # Timezone
   time.timeZone = "America/New_York";
 
-  # Select internationalisation properties.
+  # Internationalisation
   i18n.defaultLocale = "en_US.UTF-8";
 
   i18n.extraLocaleSettings = {
@@ -56,61 +51,62 @@ in
     LC_TIME = "en_US.UTF-8";
   };
 
-  # Configure keymap in X11
+  # X11 Configuration
+  services.xserver.enable = true;
   services.xserver.xkb = {
     layout = "us";
     variant = "";
   };
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  # KdeConnect Groups = uinput, input
-  # input also associated with qemu/kvm 
+  # X11 Display Manager - greetd
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = ''
+        exec ${pkgs.greetd-session-wayland-protocol}/bin/greetd --wayland-session ${pkgs.wlroots}/bin/wlroots -- \
+          --wayland-session ${pkgs.sway}/bin/sway -- -C ${pkgs.home-manager}/share/home-manager/default.nix
+      '';
+    };
+  };
+
+  # User account
   users.users.kmalone = {
     isNormalUser = true;
     description = "kmalone";
-    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "libvirtd" "kvm"];
-    packages = with pkgs; [];
+    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "libvirtd" "kvm" "video" ];
+    packages = with pkgs; [ xorg.xauth ];
   };
 
   # BEGIN Home-Manager
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
   home-manager.backupFileExtension = "backup";
-  home-manager.users.kmalone = { pkgs, ...}: {
-    dconf.settings = {
-      "org/gnome/desktop/interface" = {
-        color-scheme = "prefer-dark";
-      };
-    };
+  home-manager.users.kmalone = { pkgs, ... }: {
     imports = [./home-modules/firefox.nix];
-  
-    home.packages = [ pkgs.atool pkgs.httpie ];
+    
+    home.packages = with pkgs; [
+      atool
+      httpie
+      xdotool
+    ];
+
     home.stateVersion = "25.05";
+
     home.file = {
-      ".config/waybar".source    = ./home-modules/waybar;
-      ".config/waybar".recursive = true;
-
-      ".config/hypr".source    = ./home-modules/hypr;
-      ".config/hypr".recursive = true;
-
-      ".config/wofi".source    = ./home-modules/wofi;
-      ".config/wofi".recursive = true;
-
-      ".config/kitty".source    = ./home-modules/kitty;
-      ".config/kitty".recursive = true;
-
-      ".config/wallpapers".source = ./home-modules/wallpapers;
-      ".config/wallpapers".recursive = true;
-
-      ".bashrc".source = ./home-modules/bashrc;
+      ".config/i3".source = ./home-modules/i3;
+      ".config/i3".recursive = true;
+      
+      ".config/greetd".source = ./home-modules/greetd;
+      ".config/greetd".recursive = true;
     };
 
     programs.waybar.enable = true;
     programs.tmux = {
-        enable = true;
-        terminal = "tmux-256color";
-        extraConfig = builtins.readFile ./home-modules/tmux.conf;
+      enable = true;
+      terminal = "tmux-256color";
+      extraConfig = builtins.readFile ./home-modules/tmux.conf;
     };
+
     gtk = {
       enable = true;
       theme = {
@@ -122,16 +118,14 @@ in
         package = pkgs.gruvbox-material-gtk-theme;
       };
       gtk3.extraConfig = {
-         gtk-im-module = "fcitx";
+        gtk-im-module = "fcitx";
       };
       gtk4.extraConfig = {
-         gtk-im-module = "fcitx";
+        gtk-im-module = "fcitx";
       };
     };
-    qt = {
-      enable = true;
-      # platformTheme = "gnome";
-    };
+
+    qt.enable = true;
   };
   # END Home-Manager
 
@@ -143,32 +137,41 @@ in
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-
-    # Hyprland dependencies
-    swww # for wallpapers may not actually be a dependency/needed
+    # X11 dependencies
     xdg-desktop-portal-gtk
-    xdg-desktop-portal-hyprland
-    xwayland # compatibility layer for X.Org within Wayland
-    brightnessctl
-    meson
-    wayland-protocols
-    wayland-utils
-    wl-clipboard
+    xdg-desktop-portal
+    xwayland
+    xwayland-support
+    xorg.xauth
+    
+    # greetd dependencies
+    greetd-session-wayland-protocol
     wlroots
-    wofi # dmenu replacement for wayland environments
+    
+    # Sway/i3 shared dependencies
+    xorg.xserver
+    xorg.xcbutilgeom
+    xorg.xclip
+    xorg.xdotool
+    
+    # Utility packages
+    brightnessctl
+    wl-clipboard
     dunst # notification daemon
     kitty # terminal emulator
-    #cage # Dependency for Wayland based greetd setups
-    #greetd.regreet # a greeter
 
-    # Hyprland / Hypr-ecosystem
-    hyprland 
-    hyprpaper  # wallpaper
-    hyprshade  # night mode
-    hyprpicker # color select
-    hypridle   # idle behavior -> hyprlock
-    hyprlock   # screen locker
-    hyprcursor # edit cursor
+    # Sway packages (for fallback/reference)
+    sway
+    swaybg
+    swaylock
+    swayidle
+    # i3 packages
+    i3-wm
+    i3blocks
+    dmenu
+    rofi
+    xorg.xrdb
+    xorg.xsetroot
 
     # Productivity
     bitwarden-desktop # Password Manager
@@ -192,25 +195,18 @@ in
     # android-studio-full # Official IDE for Android (stable channel)
 
     # Homelabbing
-    syncthing syncthingtray
+    syncthing
+    syncthingtray
     openvpn
-    # wrapper that exposes `update-systemd-resolved` in /run/current-system/sw/bin
-    (pkgs.writeShellScriptBin "update-systemd-resolved" ''
-      exec ${pkgs.update-systemd-resolved}/libexec/openvpn/update-systemd-resolved "$@"
-    '')
     virt-viewer
-
     # Rice
     kdePackages.qt6ct
     cava
     gotop
     fastfetch
-    #libsForQt5.qt5ct
-    #kdePackages.qt6ct
-    #adwaita-qt
     
     # common utilities (utils)
-    wget 
+    wget
     gcc
     clang
     git
@@ -241,20 +237,19 @@ in
     flatpak # Linux application sandboxing and distribution framework
     flatpak-builder # Tool to build flatpaks from source
 
-    # Black arch
+    # Security
     nmap
 
-
-    # Browser modding utils
+    # Browser tools
     steam-run
     nspr
     nss
 
-    # device utilities
+    # Device utilities
     rpi-imager
     # android-tools
 
-    # Muh interpretted languages
+    # Programming languages
     nodejs
     electron_40
     #python315
@@ -262,33 +257,26 @@ in
     (python313.withPackages (ps: with ps; [
       pip
     ]))
-    #(python313.withPackages (ps: with ps; [
-    #  pip mutagen scipy pandas jupyterlab ipython 
-    #  scikit-learn pillow sqlalchemy aiosqlite opencv4 anthropic
-    #  matplotlib numpy plotly
-    #  requests
-    #  backtesting
-    #]))
+    cargo
+    rustc
 
-    # Muh low-level langauges
-    cargo rustc
+    # Screenshots
+    grim
+    slurp
 
-    # screenshots
-    grim slurp
-
-    ### Sound
+    # Audio
     sof-firmware
-    ## Control
     pavucontrol # maybe works better than pwvucontrol
     pwvucontrol # modern volume controller like pavucontrol 
     wireplumber # pipewire session manager
     easyeffects # pipewire audio effects, channel mixer
     alsa-utils  # troubleshooting, adds alsamixer
 
+    # GTK
     gtk4 # Multi-platform toolkit for creating graphical user interfaces
-    qbittorrent # Torrent file manager
 
-    # kdePackages
+    # KDE tools (optional but useful)
+    qbittorrent # Torrent file manager
     kdePackages.qtsvg
     kdePackages.isoimagewriter
     kdePackages.kio-gdrive # KIO Worker to access Google Drive
@@ -296,69 +284,39 @@ in
     kdePackages.kio-extras # extra protocols support (sftp, fish and more)
     kdePackages.gwenview   # video and image viewer
     kdePackages.kdenlive   # Free and open source video editor, based on MLT Framework and KDE Frameworks
-    # things for me to figure out later
-    # kdePackages.parititonmanager
-    # powerdevil
-    # fontviewer
-    # filelight
-    # kate or kwrite 
-    # Themes
     kdePackages.breeze
     kdePackages.breeze-gtk
     kdePackages.breeze-icons
     bibata-cursors
-    libsForQt5.qtstyleplugin-kvantum kdePackages.qtstyleplugin-kvantum # SVG-based Qt5 theme engine plus a config tool and extra themes
     nemo
     kdePackages.qt6gtk2
+    kdePackages.dolphin # file manager GUI using qt
+    kdePackages.kamera
+    kdePackages.kclock # Clock
+    kronometer
+    ktimetracker
+    kdePackages.ktimer
     
-    # Calculators
-      # Default
-      gnome-calculator  # Calculator for GNOME
-      #kdePackages.kalk # Calculator for KDE
-
-    # GNOME pkgs
-    gnome-decoder # QR codes
-    gtg # getting things done
-    gnome-frog # Screen OCR utility
+    # GNOME tools
+    kdePackages.qt6gtk2
+    gnome-calculator
+    gnome-decoder
+    gtg
+    gnome-frog
+    gnome-online-accounts
     gnome-online-accounts-gtk
-    gnome-online-accounts # deps for gnome-online-accounts-gtk
-
-    # Webcams
-      #GNOME
-      cheese
-      #KDE
-      webcamoid
-      kdePackages.kamera
-
-    # Clocks
-      #GNOME
-      gnome-clocks
-      gnome-solanum
-      gnome-pomodoro
-      #KDE
-      kdePackages.kclock # Clock
-      kronometer
-      ktimetracker
-      kdePackages.ktimer
-    # To compare
-    # gnome-clocks vs kclock
-    # gnome-solanum vs gnome-pomodoro
-    # kronometer vs idk
-    # 
-
+    cheese
+    gnome-clocks
+    gnome-solanum
+    gnome-pomodoro
     # Development
-      #GNOME
-      gitg # GNOME GUI client to view git repositories
-      # nix currently missing kommit sadge. 
+    gitg # GNOME GUI client to view git repositories
 
-
-    # Pdfs and OCR
-      #GNOME
-      ocrfeeder          # an OCR GUI for GNOME (uses tesceract)
-      evince             # a pdf reader for GNOME
-      #KDE
-      kdePackages.okular # a pdf reader for KDE
-      karp # pdf arranger for KDE
+    # PDF and OCR
+    ocrfeeder          # an OCR GUI for GNOME (uses tesceract)
+    evince             # a pdf reader for GNOME
+    kdePackages.okular # a pdf reader for KDE
+    karp               # pdf arranger for KDE
 
     # Gaming
     vulkan-tools
@@ -372,20 +330,29 @@ in
     kdePackages.alpaka # Kirigami client for Ollama
     # File Manager
     nautilus
-    kdePackages.dolphin # file manager GUI using qt
-
-    # NOT WORKING
-    #kdePackages.plasma-systemmonitor # provides usage statistics such as CPU%
-    #kdePackages.kamoso
-
     # displaylink # drivers
-
     # Virtualization
-    qemu_kvm virtio-win  # Windows virtio drivers ISO
+    qemu_kvm virtio-win # Windows virtio drivers ISO
     qemu_full
     spice-gtk           # SPICE client libs
     quickemu quickgui   # zero-friction VM creation
     docker_28
+
+    # OpenClaw
+    chromium
+    chromium-chromedriver
+    python313.withPackages (ps: with ps; [
+      selenium
+      playwright-python
+      beautifulsoup4
+    ])
+    
+    # Sway/i3 specific
+    slurp
+    rofi-wayland
+    feh
+    picom
+    libnotify
   ];
   # END Packages
 
@@ -409,9 +376,14 @@ in
   environment = {
     variables.WLR_NO_HARDWARE_CURSORS = "1";
     sessionVariables.NIXOS_OZONE_WL = "1"; # Hint Electron apps to use wayland
+    sessionVariables.XDG_CURRENT_DESKTOP = "i3";
+    sessionVariables.XDG_SESSION_TYPE = "x11";
     sessionVariables.DEFAULT_BROWSER = "${pkgs.firefox}/bin/firefox";
-    #variables.QT_STYLE_OVERRIDE = "kvantum";
-    #sessionVariables.GTK_THEME= "Mint-Y-Dark";
+    variables.OPENCLAW_HOME = "${home.home}/.openclaw";
+    variables.OPENCLAW_GATEWAY_URL = "http://127.0.0.1:18792";
+    
+    # i3 specific
+    sessionVariables.I3GMODIFIED = "true";
   };
 
   hardware.graphics = {
@@ -419,51 +391,37 @@ in
     enable32Bit = true;
   };
 
-  services.xserver.enable = true; # XOrg compatibility layer
+  # Services
+  services.displayManager.enable = true;
+  services.displayManager.defaultSession = "none+i3";
+  
+  services.xserver.enable = true;
   #services.xserver.videoDrivers = [ "displaylink" "modesetting" ]; # display port output over usb-a
+  services.libinput.enable = true;
 
-  services.libinput.enable = true; # Required with lightdm for whatever reason
-
-  # Display Server -> Display Manager/Greeter -> DesktopEnv/WindowManager
-
-  services.displayManager.sddm = {
-      enable = true;
-      theme = "breeze";
-  };
-
-  programs.hyprland.enable = true;
   services.dbus.enable = true;
   services.udev.enable = true;
+
   xdg.portal = {
     enable = true;
     xdgOpenUsePortal = true;
-    wlr.enable = true; # need this for kdeconnect maybe
     extraPortals = [
-      pkgs.xdg-desktop-portal-hyprland
       pkgs.xdg-desktop-portal-gtk
+      pkgs.xdg-desktop-portal-wlr
     ];
   };
 
-  # Enable sound with pipewire
+  # Sound with pipewire
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    #jack.enable = true;
-      #extraConfig = {
-      #  pipewire."99-silent-bell.conf" = {
-      #    "context.properties" = {
-      #      "module.x11.bell" = false;
-      #    };
-      #  };
-      #};
   };
   services.pipewire.wireplumber.configPackages = [];
 
-  # -- Miscelanious Services --
-  # mandb
+  # Miscellaneous Services
   documentation = {
     man = {
       enable = true;
@@ -474,6 +432,7 @@ in
   };
 
   services.blueman.enable = true;
+
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
@@ -487,7 +446,7 @@ in
   services.upower.enable = true;
   services.udisks2.enable = true;
 
-  # -- Networking --
+  # Networking
   services.resolved.enable = true;
   networking.networkmanager.enable = true;
   networking.networkmanager.dns = "systemd-resolved";
@@ -499,9 +458,7 @@ in
   ];
   networking.search = [ ];
 
-  # Openvpn (ovpn)
-
-  # Syncthing Daemon
+  # Syncthing
   services.syncthing = {
     enable = true;
     package = pkgs.syncthing;
@@ -511,7 +468,7 @@ in
     openDefaultPorts = true;
   };
 
-  # neovim
+  # Neovim
   programs.neovim = {
     enable = true;
     defaultEditor = true;
