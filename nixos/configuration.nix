@@ -65,6 +65,7 @@ in
   };
 
   # BEGIN Home-Manager
+  programs.dconf.enable = true;
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
   home-manager.backupFileExtension = "backup";
@@ -134,7 +135,6 @@ in
     xdg-desktop-portal-gtk
     xdg-desktop-portal-wlr
     xwayland
-    xwayland-support
     brightnessctl
     wl-clipboard
     wofi # dmenu replacement for wayland environments
@@ -147,7 +147,6 @@ in
     swaybg  # wallpaper
     swaylock # screen locker
     swayidle # idle behavior -> swaylock
-    swaycursor
 
     # Productivity
     bitwarden-desktop # Password Manager
@@ -228,9 +227,10 @@ in
     nodejs
     electron_40
     #python315
-    pipx
     (python313.withPackages (ps: with ps; [
       pip
+      selenium
+      beautifulsoup4
     ]))
 
     # Muh low-level langauges
@@ -326,16 +326,10 @@ in
 
     # OpenClaw specific
     chromium
-    chromium-chromedriver
-    python313.withPackages (ps: with ps; [
-      selenium
-      playwright-python
-      beautifulsoup4
-    ]);
 
     # Sway-specific tools
     slurp # Sway window selection tool
-    rofi-wayland; # Fallback if needed
+    rofi # Fallback if needed
   ];
   # END Packages
 
@@ -362,13 +356,14 @@ in
     sessionVariables.XDG_CURRENT_DESKTOP = "Sway";
     sessionVariables.XDG_SESSION_TYPE = "x11";
     sessionVariables.DEFAULT_BROWSER = "${pkgs.firefox}/bin/firefox";
-    variables.OPENCLAW_HOME = "${home.home}/.openclaw";
+    variables.OPENCLAW_HOME = "/home/kmalone/.openclaw";
     variables.OPENCLAW_GATEWAY_URL = "http://127.0.0.1:18792";
   };
 
   # No display manager - Sway runs directly
   services.displayManager.enable = false;
   services.displayManager.defaultSession = "none+sway";
+  programs.sway.enable = true;
 
   services.xserver.enable = false; # Not using X11 directly, but xwayland for compatibility
 
@@ -379,6 +374,7 @@ in
 
   xdg.portal = {
     enable = true;
+    config.common.default = "*";
     xdgOpenUsePortal = true;
     wlr.enable = true;
     extraPortals = [
@@ -386,6 +382,9 @@ in
       pkgs.xdg-desktop-portal-gtk
     ];
   };
+
+
+  hardware.graphics.enable = true;
 
   # Enable sound with pipewire
   security.rtkit.enable = true;
