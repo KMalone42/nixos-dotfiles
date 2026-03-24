@@ -379,7 +379,7 @@ in
     sessionVariables.XDG_CURRENT_DESKTOP = "i3";
     sessionVariables.XDG_SESSION_TYPE = "x11";
     sessionVariables.DEFAULT_BROWSER = "${pkgs.firefox}/bin/firefox";
-    variables.OPENCLAW_HOME = "${home.home}/.openclaw";
+    variables.OPENCLAW_HOME = "~/.openclaw";
     variables.OPENCLAW_GATEWAY_URL = "http://127.0.0.1:18792";
     
     # i3 specific
@@ -395,7 +395,6 @@ in
   services.displayManager.enable = true;
   services.displayManager.defaultSession = "none+i3";
   
-  services.xserver.enable = true;
   #services.xserver.videoDrivers = [ "displaylink" "modesetting" ]; # display port output over usb-a
   services.libinput.enable = true;
 
