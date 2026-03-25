@@ -1,0 +1,9 @@
+[Seat:*]
+# Text-based greetd configuration
+# Simplified version for practical use
+
+greeter = greetd-agreety
+
+# Optional terminal settings
+# terminal = ${pkgs.foot}/bin/foot
+# terminal_args = -c ${pkgs.foot}/config

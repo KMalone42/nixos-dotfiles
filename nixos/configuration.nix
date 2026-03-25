@@ -153,7 +153,7 @@ in
     xorg.xauth
 
     # greetd dependencies
-    greetd-session-x11
+    greetd
 
     # Sway/i3 shared dependencies
     xorg.xserver
