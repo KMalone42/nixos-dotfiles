@@ -4,6 +4,15 @@
 
 let
   home-manager = builtins.fetchTarball https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz;
+  i3Config = pkgs.writeText "greetd-i3-config" ''
+    # `-l` activates layer-shell mode. Notice that `i3msg exit` will run after greetd.
+    exec "${pkgs.greetd}/bin/greet -l; i3msg exit"
+    bindsym Mod4+shift+e exec swaynag \
+      -t warning \
+      -m 'What do you want to do?' \
+      -b 'Poweroff' 'systemctl poweroff' \
+      -b 'Reboot' 'systemctl reboot'
+  '';
 in
 {
   imports =
@@ -62,9 +71,9 @@ in
   services.greetd = {
     enable = true;
     settings = {
-      default_session = ''
-        exec ${pkgs.greetd-session-x11}/bin/greetd-session-x11 i3
-      '';
+      default_session = {
+        command = "${pkgs.i3}/bin/i3 --config ${i3Config}";
+      };
     };
   };
 
