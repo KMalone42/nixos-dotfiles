@@ -1,4 +1,4 @@
-# NixOS manual (accessible by running ‘nixos-help’).
+# NixOS manual (accessible by running 'nixos-help').
 
 { config, pkgs, lib, ... }:
 
@@ -7,7 +7,7 @@ let
 in
 {
   imports =
-  [ 
+  [
     ./hardware-configuration.nix
     #./modules/nvidia.nix
     # ./modules/nvidia-legacy.nix
@@ -63,8 +63,7 @@ in
     enable = true;
     settings = {
       default_session = ''
-        exec ${pkgs.greetd-session-wayland-protocol}/bin/greetd --wayland-session ${pkgs.wlroots}/bin/wlroots -- \
-          --wayland-session ${pkgs.sway}/bin/sway -- -C ${pkgs.home-manager}/share/home-manager/default.nix
+        exec ${pkgs.greetd-session-x11}/bin/greetd-session-x11 i3
       '';
     };
   };
@@ -83,7 +82,7 @@ in
   home-manager.backupFileExtension = "backup";
   home-manager.users.kmalone = { pkgs, ... }: {
     imports = [./home-modules/firefox.nix];
-    
+
     home.packages = with pkgs; [
       atool
       httpie
@@ -95,7 +94,7 @@ in
     home.file = {
       ".config/i3".source = ./home-modules/i3;
       ".config/i3".recursive = true;
-      
+
       ".config/greetd".source = ./home-modules/greetd;
       ".config/greetd".recursive = true;
     };
@@ -143,17 +142,16 @@ in
     xwayland
     xwayland-support
     xorg.xauth
-    
+
     # greetd dependencies
-    greetd-session-wayland-protocol
-    wlroots
-    
+    greetd-session-x11
+
     # Sway/i3 shared dependencies
     xorg.xserver
     xorg.xcbutilgeom
     xorg.xclip
     xorg.xdotool
-    
+
     # Utility packages
     brightnessctl
     wl-clipboard
@@ -204,7 +202,7 @@ in
     cava
     gotop
     fastfetch
-    
+
     # common utilities (utils)
     wget
     gcc
@@ -267,7 +265,7 @@ in
     # Audio
     sof-firmware
     pavucontrol # maybe works better than pwvucontrol
-    pwvucontrol # modern volume controller like pavucontrol 
+    pwvucontrol # modern volume controller like pavucontrol
     wireplumber # pipewire session manager
     easyeffects # pipewire audio effects, channel mixer
     alsa-utils  # troubleshooting, adds alsamixer
@@ -296,7 +294,7 @@ in
     kronometer
     ktimetracker
     kdePackages.ktimer
-    
+
     # GNOME tools
     kdePackages.qt6gtk2
     gnome-calculator
@@ -346,7 +344,7 @@ in
       playwright-python
       beautifulsoup4
     ])
-    
+
     # Sway/i3 specific
     slurp
     rofi-wayland
@@ -381,7 +379,7 @@ in
     sessionVariables.DEFAULT_BROWSER = "${pkgs.firefox}/bin/firefox";
     variables.OPENCLAW_HOME = "~/.openclaw";
     variables.OPENCLAW_GATEWAY_URL = "http://127.0.0.1:18792";
-    
+
     # i3 specific
     sessionVariables.I3GMODIFIED = "true";
   };
@@ -394,7 +392,7 @@ in
   # Services
   services.displayManager.enable = true;
   services.displayManager.defaultSession = "none+i3";
-  
+
   #services.xserver.videoDrivers = [ "displaylink" "modesetting" ]; # display port output over usb-a
   services.libinput.enable = true;
 
