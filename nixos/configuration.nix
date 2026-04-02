@@ -149,17 +149,10 @@ in
     xdg-desktop-portal-gtk
     xdg-desktop-portal
     xwayland
-    xwayland-support
     xorg.xauth
 
     # greetd dependencies
     greetd
-
-    # Sway/i3 shared dependencies
-    xorg.xserver
-    xorg.xcbutilgeom
-    xorg.xclip
-    xorg.xdotool
 
     # Utility packages
     brightnessctl
@@ -173,7 +166,7 @@ in
     swaylock
     swayidle
     # i3 packages
-    i3-wm
+    i3
     i3blocks
     dmenu
     rofi
@@ -347,16 +340,9 @@ in
 
     # OpenClaw
     chromium
-    chromium-chromedriver
-    python313.withPackages (ps: with ps; [
-      selenium
-      playwright-python
-      beautifulsoup4
-    ])
 
     # Sway/i3 specific
     slurp
-    rofi-wayland
     feh
     picom
     libnotify
