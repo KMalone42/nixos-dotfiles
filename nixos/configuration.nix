@@ -4,6 +4,7 @@
 
 let
   home-manager = builtins.fetchTarball https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz;
+  digitalMedia = "/home/kmalone/Digital_Media";
 in
 {
   imports =
@@ -12,7 +13,7 @@ in
     #./modules/nvidia.nix
     # ./modules/nvidia-legacy.nix
     #./modules/intel-igpu.nix
-    ./modules/music.nix
+    #./modules/music.nix
     #./modules/gaming.nix
     ./modules/nvim.nix
     #./modules/printers.nix
@@ -132,6 +133,17 @@ in
       enable = true;
       # platformTheme = "gnome";
     };
+    services.mpd = {
+      enable = true;
+      musicDirectory = "${digitalMedia}/Music";
+      extraConfig = ''
+        audio_output {
+          type "pipewire"
+          name "PipeWire Sound Server"
+          mixer_type "software"
+        }
+      '';
+    };
   };
   # END Home-Manager
 
@@ -169,6 +181,10 @@ in
     hypridle   # idle behavior -> hyprlock
     hyprlock   # screen locker
     hyprcursor # edit cursor
+
+    # Music
+    mpc
+    rmpc
 
     # Productivity
     bitwarden-desktop # Password Manager

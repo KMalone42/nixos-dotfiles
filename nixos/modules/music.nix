@@ -5,26 +5,34 @@ let
 	digitalMedia = "/home/kmalone/Digital_Media";
 in
 {
-	services.mpd = {
-		enable = true;
-		user = "kmalone";
-		musicDirectory = "${digitalMedia}/Music";
-		extraConfig = ''
-			audio_output {
-				type "pipewire"
-				name "PipeWire Sound Server"
-				enabled "no"
-			}
-		'';
+  services.mpd = {
+    enable = true;
+    user = "kmalone";
+    musicDirectory = "${digitalMedia}/Music";
 
-		# Optional
-		network = {
-			listenAddress = "127.0.0.1";
-			port = 6600;
-		};
-		startWhenNeeded = false; # systemd feature: only start MPD service upon connection to its socket
-	};
+      
+    extraConfig = ''
+      audio_output {
+        type "pipewire"
+        name "PipeWire Sound Server"
+        mixer_type "software"
+      }
+    '';
 
-	environment.systemPackages = 
-		(with pkgs; [mpc rmpc]);
+    network = {
+      listenAddress = "127.0.0.1";
+      port = 6600;
+    };
+
+    startWhenNeeded = false;
+  };
+  
+  systemd.services.mpd.environment = {
+    XDG_RUNTIME_DIR = "/run/user/${toString config.users.users.kmalone.uid}";
+  };
+
+  environment.systemPackages = with pkgs; [
+    mpc
+    rmpc
+  ];
 }
