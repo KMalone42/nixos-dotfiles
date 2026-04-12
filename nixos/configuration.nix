@@ -1,43 +1,31 @@
-# NixOS manual (accessible by running ‘nixos-help’).
+# Edit this configuration file to define what should be installed on
+# your system.  Help is available in the configuration.nix(5) man page
+# and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, ... }:
+{ config, pkgs, ... }:
 
-let
-  home-manager = builtins.fetchTarball https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz;
-  digitalMedia = "/home/kmalone/Digital_Media";
-in
 {
   imports =
-  [ 
-    ./hardware-configuration.nix
-    #./modules/nvidia.nix
-    # ./modules/nvidia-legacy.nix
-    #./modules/intel-igpu.nix
-    #./modules/music.nix
-    #./modules/gaming.nix
-    ./modules/nvim.nix
-    #./modules/printers.nix
-    #./modules/octoprint.nix
-    ./modules/keyboard.nix
-    ./modules/polkit.nix
-    #./modules/plex.nix
-    #./modules/virt-host.nix
-    ./modules/openvpn-client.nix
-    ./modules/wireguard-client.nix
-    (import "${home-manager}/nixos")
-  ]
-  ;
-    
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+    [ # Include the results of the hardware scan.
+      ./hardware-configuration.nix
+      ./modules/plex.nix
+      ./modules/watchdog.nix
+    ];
 
-  networking.hostName = "nixos"; # Define your hostname.
+  # Bootloader.
+  boot.loader.grub.enable = true;
+  boot.loader.grub.device = "/dev/sda";
+  boot.loader.grub.useOSProber = true;
+
+  networking.hostName = "plexy2"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+
+  # Enable networking
+  networking.networkmanager.enable = true;
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -64,493 +52,53 @@ in
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  # KdeConnect Groups = uinput, input
-  # input also associated with qemu/kvm 
-  users.users.kmalone = {
+  users.users.plexy = {
     isNormalUser = true;
-    description = "kmalone";
-    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "libvirtd" "kvm"];
+    description = "plexy";
+    extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [];
   };
 
-  # BEGIN Home-Manager
-  home-manager.useGlobalPkgs = true;
-  home-manager.useUserPackages = true;
-  home-manager.backupFileExtension = "backup";
-  home-manager.users.kmalone = { pkgs, ...}: {
-    dconf.settings = {
-      "org/gnome/desktop/interface" = {
-        color-scheme = "prefer-dark";
-      };
-    };
-    imports = [./home-modules/firefox.nix];
-  
-    home.packages = [ pkgs.atool pkgs.httpie ];
-    home.stateVersion = "25.05";
-    home.file = {
-      ".config/waybar".source    = ./home-modules/waybar;
-      ".config/waybar".recursive = true;
-
-      ".config/hypr".source    = ./home-modules/hypr;
-      ".config/hypr".recursive = true;
-
-      ".config/wofi".source    = ./home-modules/wofi;
-      ".config/wofi".recursive = true;
-
-      ".config/kitty".source    = ./home-modules/kitty;
-      ".config/kitty".recursive = true;
-
-      ".config/wallpapers".source = ./home-modules/wallpapers;
-      ".config/wallpapers".recursive = true;
-
-      ".bashrc".source = ./home-modules/bashrc;
-    };
-
-    programs.waybar.enable = true;
-    programs.tmux = {
-        enable = true;
-        terminal = "tmux-256color";
-        extraConfig = builtins.readFile ./home-modules/tmux.conf;
-    };
-    gtk = {
-      enable = true;
-      theme = {
-        name = "Gruvbox-Dark";
-        package = pkgs.gruvbox-gtk-theme;
-      };
-      iconTheme = {
-        name = "Gruvbox-Material-Dark";
-        package = pkgs.gruvbox-material-gtk-theme;
-      };
-      gtk3.extraConfig = {
-         gtk-im-module = "fcitx";
-      };
-      gtk4.extraConfig = {
-         gtk-im-module = "fcitx";
-      };
-    };
-    qt = {
-      enable = true;
-      # platformTheme = "gnome";
-    };
-    services.mpd = {
-      enable = true;
-      musicDirectory = "${digitalMedia}/Music";
-      extraConfig = ''
-        audio_output {
-          type "pipewire"
-          name "PipeWire Sound Server"
-          mixer_type "software"
-        }
-      '';
-    };
-  };
-  # END Home-Manager
-
-  # BEGIN Packages
-
-  nixpkgs.config.allowUnfree = true; # Allow unfree packages
-  nixpkgs.config.android_sdk.accept_license = true; # Allow android-studio-full
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-
-    # Hyprland dependencies
-    swww # for wallpapers may not actually be a dependency/needed
-    xdg-desktop-portal-gtk
-    xdg-desktop-portal-hyprland
-    xwayland # compatibility layer for X.Org within Wayland
-    brightnessctl
-    meson
-    wayland-protocols
-    wayland-utils
-    wl-clipboard
-    wlroots
-    wofi # dmenu replacement for wayland environments
-    dunst # notification daemon
-    kitty # terminal emulator
-    #cage # Dependency for Wayland based greetd setups
-    #greetd.regreet # a greeter
-
-    # Hyprland / Hypr-ecosystem
-    hyprland 
-    hyprpaper  # wallpaper
-    hyprshade  # night mode
-    hyprpicker # color select
-    hypridle   # idle behavior -> hyprlock
-    hyprlock   # screen locker
-    hyprcursor # edit cursor
-
-    # Music
-    mpc
-    rmpc
-
-    # Productivity
-    bitwarden-desktop # Password Manager
-    chromium # Open source web browser from Google
-    gimp3    # GNU Image Manipulation Program
-    inkscape # Vector graphics editor
-    neovim      # Vim-fork focused on extensbility and usability
-    rclone      # Command line program to sync files and directories to and from major cloud storage
-    thunderbird # Mozilla's "Full-featured e-mail client"
-    tmux        # a terminal multiplexer
-    vesktop     # Unofficial Discord Client
-    libreoffice-qt6-fresh # Comprehensive, professional-quality productivity suite, a variant of openoffice.org
-    newsflash
-    cura-appimage
-    prusa-slicer
-    newsboat # Fork of Newsbeuter, an RSS/Atom feed reader for the text console
-    sqlitebrowser # DB Browser for SQLite
-    dbeaver-bin # Universal SQL Client for developers, DBA and analysts. Supports MySQL, PostgreSQL, MariaDB, SQLite, and more
-    aider-chat # A basically universal ollama claude-code like client
-    opencode # AI coding agent built for the terminal
-    # android-studio-full # Official IDE for Android (stable channel)
-
-    # Homelabbing
-    syncthing syncthingtray
-    openvpn
-    # wrapper that exposes `update-systemd-resolved` in /run/current-system/sw/bin
-    (pkgs.writeShellScriptBin "update-systemd-resolved" ''
-      exec ${pkgs.update-systemd-resolved}/libexec/openvpn/update-systemd-resolved "$@"
-    '')
-    virt-viewer
-
-    # Rice
-    kdePackages.qt6ct
-    cava
-    gotop
-    fastfetch
-    #libsForQt5.qt5ct
-    #kdePackages.qt6ct
-    #adwaita-qt
-    
-    # common utilities (utils)
-    wget 
-    gcc
-    clang
-    git
-    mpv
-    busybox
-    scdoc
-    cmake
-    efibootmgr
-    tlrc # tldr client written in rust
-    man
-    cyme # Modern cross-platform lsusb
-    gnumake42 # Tool to control the generation of non-source files from sources
-    parted # Create, destroy, resize, check, and copy partitions
-    man-pages
-    man-pages-posix
-    linux-manual
-    unzip
-    bzip3
-    nwg-look
-    jq
-    cups # Standards-based printing system for UNIX
-    ffmpeg_7 # Complete, cross-platform solution to record, convert and stream audio and video
-    ripgrep
-    ripgrep-all
-    stdenv.cc.cc
-    zlib
-    glibc
-    flatpak # Linux application sandboxing and distribution framework
-    flatpak-builder # Tool to build flatpaks from source
-
-    # Black arch
-    nmap
-
-
-    # Browser modding utils
-    steam-run
-    nspr
-    nss
-
-    # device utilities
-    rpi-imager
-    # android-tools
-
-    # Muh interpretted languages
-    nodejs
-    electron_40
-    #python315
-    pipx
-    (python313.withPackages (ps: with ps; [
-      pip
-    ]))
-    #(python313.withPackages (ps: with ps; [
-    #  pip mutagen scipy pandas jupyterlab ipython 
-    #  scikit-learn pillow sqlalchemy aiosqlite opencv4 anthropic
-    #  matplotlib numpy plotly
-    #  requests
-    #  backtesting
-    #]))
-
-    # Muh low-level langauges
-    cargo rustc
-
-    # screenshots
-    grim slurp
-
-    ### Sound
-    sof-firmware
-    ## Control
-    pavucontrol # maybe works better than pwvucontrol
-    pwvucontrol # modern volume controller like pavucontrol 
-    wireplumber # pipewire session manager
-    easyeffects # pipewire audio effects, channel mixer
-    alsa-utils  # troubleshooting, adds alsamixer
-
-    gtk4 # Multi-platform toolkit for creating graphical user interfaces
-    qbittorrent # Torrent file manager
-
-    # kdePackages
-    kdePackages.qtsvg
-    kdePackages.isoimagewriter
-    kdePackages.kio-gdrive # KIO Worker to access Google Drive
-    kdePackages.kio-fuse   # to mount remote filesystems via FUSE
-    kdePackages.kio-extras # extra protocols support (sftp, fish and more)
-    kdePackages.gwenview   # video and image viewer
-    kdePackages.kdenlive   # Free and open source video editor, based on MLT Framework and KDE Frameworks
-    # things for me to figure out later
-    # kdePackages.parititonmanager
-    # powerdevil
-    # fontviewer
-    # filelight
-    # kate or kwrite 
-    # Themes
-    kdePackages.breeze
-    kdePackages.breeze-gtk
-    kdePackages.breeze-icons
-    bibata-cursors
-    libsForQt5.qtstyleplugin-kvantum kdePackages.qtstyleplugin-kvantum # SVG-based Qt5 theme engine plus a config tool and extra themes
-    nemo
-    kdePackages.qt6gtk2
-    
-    # Calculators
-      # Default
-      gnome-calculator  # Calculator for GNOME
-      #kdePackages.kalk # Calculator for KDE
-
-    # GNOME pkgs
-    gnome-decoder # QR codes
-    gtg # getting things done
-    gnome-frog # Screen OCR utility
-    gnome-online-accounts-gtk
-    gnome-online-accounts # deps for gnome-online-accounts-gtk
-
-    # Webcams
-      #GNOME
-      cheese
-      #KDE
-      webcamoid
-      kdePackages.kamera
-
-    # Clocks
-      #GNOME
-      gnome-clocks
-      gnome-solanum
-      gnome-pomodoro
-      #KDE
-      kdePackages.kclock # Clock
-      kronometer
-      ktimetracker
-      kdePackages.ktimer
-    # To compare
-    # gnome-clocks vs kclock
-    # gnome-solanum vs gnome-pomodoro
-    # kronometer vs idk
-    # 
-
-    # Development
-      #GNOME
-      gitg # GNOME GUI client to view git repositories
-      # nix currently missing kommit sadge. 
-
-
-    # Pdfs and OCR
-      #GNOME
-      ocrfeeder          # an OCR GUI for GNOME (uses tesceract)
-      evince             # a pdf reader for GNOME
-      #KDE
-      kdePackages.okular # a pdf reader for KDE
-      karp # pdf arranger for KDE
-
-    # Gaming
-    vulkan-tools
-    prismlauncher
-
-    # Recording
-    obs-studio
-
-    # AI
-    ollama-cuda # Run large language models locally, using CUDA for NVIDIA GPU acceleration
-    kdePackages.alpaka # Kirigami client for Ollama
-    # File Manager
-    nautilus
-    kdePackages.dolphin # file manager GUI using qt
-
-    # NOT WORKING
-    #kdePackages.plasma-systemmonitor # provides usage statistics such as CPU%
-    #kdePackages.kamoso
-
-    # displaylink # drivers
-
-    # Virtualization
-    qemu_kvm virtio-win  # Windows virtio drivers ISO
-    qemu_full
-    spice-gtk           # SPICE client libs
-    quickemu quickgui   # zero-friction VM creation
-    docker_28
-  ];
-  # END Packages
-
-  # Fonts
-  fonts.packages = with pkgs; [
-    nerd-fonts.meslo-lg
-    nerd-fonts.symbols-only
-    noto-fonts-cjk-sans
-    noto-fonts-color-emoji
-    liberation_ttf
-    fira-code
-    fira-code-symbols
-    mplus-outline-fonts.githubRelease
-    dina-font
-    proggyfonts
-    # Chinese
-    wqy_zenhei
+  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+  wget
+  git
   ];
 
-  # Environment Variables
-  environment = {
-    variables.WLR_NO_HARDWARE_CURSORS = "1";
-    sessionVariables.NIXOS_OZONE_WL = "1"; # Hint Electron apps to use wayland
-    sessionVariables.DEFAULT_BROWSER = "${pkgs.firefox}/bin/firefox";
-    #variables.QT_STYLE_OVERRIDE = "kvantum";
-    #sessionVariables.GTK_THEME= "Mint-Y-Dark";
-  };
+  # Some programs need SUID wrappers, can be configured further or are
+  # started in user sessions.
+  # programs.mtr.enable = true;
+  # programs.gnupg.agent = {
+  #   enable = true;
+  #   enableSSHSupport = true;
+  # };
 
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
+  # List services that you want to enable:
 
-  services.xserver.enable = true; # XOrg compatibility layer
-  #services.xserver.videoDrivers = [ "displaylink" "modesetting" ]; # display port output over usb-a
+  # Enable the OpenSSH daemon.
+  services.openssh.enable = true;
 
-  services.libinput.enable = true; # Required with lightdm for whatever reason
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
 
-  # Display Server -> Display Manager/Greeter -> DesktopEnv/WindowManager
+  environment.etc."motd".text = ''
+    This is a plex server visit <ip>:32400/web/ in the browser to see what's up
+  '';
 
-  services.displayManager.sddm = {
-      enable = true;
-      theme = "breeze";
-  };
-
-  programs.hyprland.enable = true;
-  services.dbus.enable = true;
-  services.udev.enable = true;
-  xdg.portal = {
-    enable = true;
-    xdgOpenUsePortal = true;
-    wlr.enable = true; # need this for kdeconnect maybe
-    extraPortals = [
-      pkgs.xdg-desktop-portal-hyprland
-      pkgs.xdg-desktop-portal-gtk
-    ];
-  };
-
-  # Enable sound with pipewire
-  security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-    #jack.enable = true;
-      #extraConfig = {
-      #  pipewire."99-silent-bell.conf" = {
-      #    "context.properties" = {
-      #      "module.x11.bell" = false;
-      #    };
-      #  };
-      #};
-  };
-  services.pipewire.wireplumber.configPackages = [];
-
-  # -- Miscelanious Services --
-  # mandb
-  documentation = {
-    man = {
-      enable = true;
-      generateCaches = true; # builds the whatis/apropos cache at switch time
-      man-db.enable = true;  # or mandoc.enable = true; pick one
-    };
-    dev.enable = true;       # for section 3 etc. (optional but nice)
-  };
-
-  services.blueman.enable = true;
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-
-    settings = {
-      General.Experimental = true;
-      General.Enable = "Source,Sink,Media,Socket,HID";
-    };
-  };
-
-  services.upower.enable = true;
-  services.udisks2.enable = true;
-
-  # -- Networking --
-  services.resolved.enable = true;
-  networking.networkmanager.enable = true;
-  networking.networkmanager.dns = "systemd-resolved";
-  networking.nameservers = [
-    "1.1.1.1"
-    "1.0.0.1"
-    "8.8.8.8"
-    "8.8.4.4"
-  ];
-  networking.search = [ ];
-
-  # Openvpn (ovpn)
-
-  # Syncthing Daemon
-  services.syncthing = {
-    enable = true;
-    package = pkgs.syncthing;
-    user = "kmalone";
-    dataDir = "/home/kmalone";
-    configDir = "/home/kmalone/.config/syncthing";
-    openDefaultPorts = true;
-  };
-
-  # neovim
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-    viAlias = true;
-    vimAlias = true;
-  };
-
-  boot = {
-    extraModulePackages = [ config.boot.kernelPackages.evdi ];
-    initrd = {
-      # List of modules that are always loaded by the initrd.
-      kernelModules = [
-        "evdi"
-      ];
-    };
-  };
-
-  # Experimental features
-  # --extra-experimental-features nix-command
-  # experimental-features = nix-command flakes
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It‘s perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "25.05"; # Don't change unless required
+  system.stateVersion = "25.11"; # Did you read the comment?
+
 }
