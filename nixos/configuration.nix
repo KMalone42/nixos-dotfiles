@@ -69,7 +69,7 @@ in
   users.users.kmalone = {
     isNormalUser = true;
     description = "kmalone";
-    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "libvirtd" "kvm"];
+    extraGroups = [ "networkmanager" "wheel" "uinput" "input" "libvirtd" "kvm" "docker" ];
     packages = with pkgs; [];
   };
 
@@ -189,6 +189,7 @@ in
     # Productivity
     bitwarden-desktop # Password Manager
     chromium # Open source web browser from Google
+    tor # Anonymizing overlay network
     gimp3    # GNU Image Manipulation Program
     inkscape # Vector graphics editor
     neovim      # Vim-fork focused on extensbility and usability
@@ -228,6 +229,7 @@ in
     # common utilities (utils)
     wget 
     gcc
+    gcc.cc.lib
     clang
     git
     mpv
@@ -244,6 +246,7 @@ in
     man-pages-posix
     linux-manual
     unzip
+    zip
     bzip3
     nwg-look
     jq
@@ -379,6 +382,7 @@ in
     # Gaming
     vulkan-tools
     prismlauncher
+    ryubing
 
     # Recording
     obs-studio
@@ -404,6 +408,7 @@ in
     docker_28
   ];
   # END Packages
+  virtualisation.docker.enable = true;
 
   # Fonts
   fonts.packages = with pkgs; [
