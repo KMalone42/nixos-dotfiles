@@ -14,6 +14,12 @@
 
   networking.wireguard.enable = true;
 
+  environment.systemPackages = with pkgs; [
+    wireguard-ui # Web user interface to manage your WireGuard setup
+    wireguard-go # Userspace Go implementation of WireGuard
+  ];
+
+
   #  networking.wireguard.interfaces = {
   #    wg0 = {
   #      ips = [ "10.x.x.x/32" ]; # from Mullvad config

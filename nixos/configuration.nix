@@ -3,7 +3,7 @@
 { config, pkgs, lib, ... }:
 
 let
-  home-manager = builtins.fetchTarball https://github.com/nix-community/home-manager/archive/release-25.11.tar.gz;
+  home-manager = builtins.fetchTarball https://github.com/nix-community/home-manager/archive/release-26.05.tar.gz;
   digitalMedia = "/home/kmalone/Digital_Media";
 in
 {
@@ -187,7 +187,7 @@ in
     rmpc
 
     # Productivity
-    bitwarden-desktop # Password Manager
+    # bitwarden-desktop # Password Manager; waiting for it to update electron
     chromium # Open source web browser from Google
     tor # Anonymizing overlay network
     gimp3    # GNU Image Manipulation Program
@@ -275,11 +275,9 @@ in
 
     # Muh interpretted languages
     nodejs
-    electron_40
     #python315
-    pipx
     (python313.withPackages (ps: with ps; [
-      pip
+      pip uv
     ]))
     #(python313.withPackages (ps: with ps; [
     #  pip mutagen scipy pandas jupyterlab ipython 
@@ -388,7 +386,7 @@ in
     obs-studio
 
     # AI
-    ollama-cuda # Run large language models locally, using CUDA for NVIDIA GPU acceleration
+    # ollama-cuda # Run large language models locally, using CUDA for NVIDIA GPU acceleration BREAK OUT INTO A MODULE
     kdePackages.alpaka # Kirigami client for Ollama
     # File Manager
     nautilus
@@ -405,7 +403,7 @@ in
     qemu_full
     spice-gtk           # SPICE client libs
     quickemu quickgui   # zero-friction VM creation
-    docker_28
+    docker
   ];
   # END Packages
   virtualisation.docker.enable = true;
